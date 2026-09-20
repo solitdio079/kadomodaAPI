@@ -1,0 +1,31 @@
+-- AlterTable
+ALTER TABLE "Post" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "media" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'private',
+ADD COLUMN     "topics" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "updatedAt" TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "pwd" TEXT,
+ADD COLUMN     "role" TEXT NOT NULL DEFAULT 'USER',
+ADD COLUMN     "updatedAt" TIMESTAMP(3),
+ADD COLUMN     "verified" BOOLEAN NOT NULL DEFAULT false;
+
+-- CreateTable
+CREATE TABLE "Comment" (
+    "id" SERIAL NOT NULL,
+    "content" TEXT NOT NULL,
+    "authorId" INTEGER NOT NULL,
+    "postId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

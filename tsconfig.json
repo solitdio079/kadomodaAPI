@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./built",
+    "strict": true,
+    "allowJs": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  },
+  "include": ["./src/**/*", "src/generated", "src/lib"]
+}

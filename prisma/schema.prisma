@@ -68,6 +68,7 @@ model Address {
 
 model Product {
   id Int @id @default(autoincrement())
+  name String
   details String @default("")
   sizes String[]
   total_qty Int
@@ -75,9 +76,9 @@ model Product {
   images String[] @default([])
   variant String
   campaign Campaign @relation(fields: [campaignId], references: [id])
-  campaignId Int
+  campaignId Int @default(0) 
   category Category @relation(fields:[categoryId], references: [id])
-  categoryId Int
+  categoryId Int @default(0)
 }
 
 model Order {

@@ -36,10 +36,42 @@ const PostValidator = z.object({
     topicString: z.string().regex(/^\w+(?:,\w+)*$/, {error: (iss) => `${iss.input} must have comma separated words!`}).optional()
 })
 
+const CampaignValidator = z.object({
+    name: z.string().min(3, {error: (iss) => `${iss.input} must have at least 4 characters!`}),
+    discount: z.number("Please enter the discounted amount!")
+})
+
+const ProductValidator = z.object({
+    name: z.string().min(3,{error: (iss) => `${iss.input} must have at least 3 characters!`}),
+    details: z.string().min(10, {error: (iss) => `${iss.input} must have at least 10 characters!`}),
+    sizesString: z.string().regex(/^\w+(?:,\w+)*$/,{error: (iss) => `${iss.input} must have at comma separated words.`}),
+    total_qty: z.number("Please proviide a total quantity"),
+    price: z.string().regex(/^\d+(\.\d+)?$/, "Invalid decimal format"),
+    campaignId: z.number().optional(),
+    variant: z.string("Please provide a variant"),
+    categoryId: z.number().optional()
+})
+
+
+const CategoryValidator = z.object({
+    name: z.string().min(3, {error: (iss) => `${iss.input} must have at least 3 characters!`})
+})
+
 const CommentValidator = z.object({
     content: z.string().trim().min(3,"Your comment must not be empty! It must be at least 3 characters!").normalize(),
     postId: z.string().transform((idString) => parseInt(idString))
 
 })
 
-export {CommentValidator, PostValidator, UserValidator,UserUpdateValidator,UserRoleValidator, PostStatusValidator, UserUpdatePassword}
+export {
+     CommentValidator,
+     PostValidator,
+     UserValidator,
+     UserUpdateValidator,
+     UserRoleValidator, 
+     PostStatusValidator, 
+     UserUpdatePassword,
+     ProductValidator,
+     CategoryValidator,
+     CampaignValidator
+    }

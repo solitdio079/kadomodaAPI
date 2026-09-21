@@ -10,11 +10,14 @@ const app = express();
 
 app.use(express.static('public'));
 
-app.use("/auth", routes.auth);
-app.use("/posts", routes.post);
+app.use("/auth", routes.auth)
+app.use("/posts", routes.post)
 app.use(passport.authenticate("jwt", { session: false }));
-app.use("/comments", routes.comment);
-app.use("/users", routes.user);
+app.use("/product", routes.product)
+app.use("/category", routes.category)
+app.use("/campaign", routes.campaign)
+app.use("/comments", routes.comment)
+app.use("/users", routes.user)
 
 app.get("/", (req: Request, res: Response) => {
   return res.json({

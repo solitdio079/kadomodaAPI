@@ -131,6 +131,70 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AddressScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  zipcode: 'zipcode',
+  city: 'city',
+  country: 'country',
+  phone: 'phone',
+  address: 'address',
+  userId: 'userId',
+  orderId: 'orderId'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  details: 'details',
+  sizes: 'sizes',
+  total_qty: 'total_qty',
+  price: 'price',
+  images: 'images',
+  variant: 'variant',
+  campaignId: 'campaignId',
+  categoryId: 'categoryId'
+};
+
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  products: 'products',
+  sizes: 'sizes',
+  quantities: 'quantities',
+  subtotal: 'subtotal',
+  userId: 'userId'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  intent: 'intent',
+  method: 'method',
+  status: 'status',
+  orderId: 'orderId'
+};
+
+exports.Prisma.CartScalarFieldEnum = {
+  id: 'id',
+  products: 'products',
+  sizes: 'sizes',
+  quantities: 'quantities',
+  subtotal: 'subtotal',
+  userId: 'userId'
+};
+
+exports.Prisma.CampaignScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  image: 'image',
+  discount: 'discount'
+};
+
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
 exports.Prisma.PostScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -172,6 +236,19 @@ exports.Role = exports.$Enums.Role = {
   USER: 'USER'
 };
 
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  PROCESSING: 'PROCESSING',
+  KARGODA: 'KARGODA',
+  TESLIM_EDILDI: 'TESLIM_EDILDI',
+  IPTAL: 'IPTAL'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PAID: 'PAID',
+  UNPAID: 'UNPAID',
+  REFUNDED: 'REFUNDED'
+};
+
 exports.Status = exports.$Enums.Status = {
   PRIVATE: 'PRIVATE',
   PUBLIC: 'PUBLIC'
@@ -179,6 +256,13 @@ exports.Status = exports.$Enums.Status = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Address: 'Address',
+  Product: 'Product',
+  Order: 'Order',
+  Payment: 'Payment',
+  Cart: 'Cart',
+  Campaign: 'Campaign',
+  Category: 'Category',
   Post: 'Post',
   Comment: 'Comment'
 };

@@ -22,6 +22,19 @@ enum Status {
   PUBLIC
 }
 
+enum OrderStatus {
+  PROCESSING
+  KARGODA
+  TESLIM_EDILDI
+  IPTAL
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  REFUNDED
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
@@ -33,6 +46,84 @@ model User {
   pwd       String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  cart      Cart?
+  addresses Address[]
+  orders    Order[]
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  name    String
+  zipcode String
+  city    String
+  country String @default("Türkiye")
+  phone   String
+  address String
+  owner   User   @relation(fields: [userId], references: [id])
+  userId  Int
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId Int    @unique
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String
+  details    String   @default("")
+  sizes      String[]
+  total_qty  Int
+  price      Decimal  @db.Decimal(10, 2)
+  images     String[] @default([])
+  variant    String
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  campaignId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  status     OrderStatus
+  products   Int[]
+  sizes      String[]
+  quantities Int[]
+  subtotal   Decimal     @db.Decimal(10, 2)
+  address    Address?
+  owner      User        @relation(fields: [userId], references: [id])
+  userId     Int
+  payment    Payment?
+}
+
+model Payment {
+  id      Int           @id @default(autoincrement())
+  intent  String?
+  method  String        @default("Iyzico")
+  status  PaymentStatus
+  order   Order         @relation(fields: [orderId], references: [id])
+  orderId Int           @unique
+}
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  products   Int[]
+  sizes      String[]
+  quantities Int[]
+  subtotal   Decimal  @db.Decimal(10, 2)
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @unique
+}
+
+model Campaign {
+  id       Int       @id @default(autoincrement())
+  name     String
+  image    String?
+  discount Int
+  products Product[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
 }
 
 model Post {

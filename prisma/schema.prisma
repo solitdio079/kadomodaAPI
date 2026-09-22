@@ -2,7 +2,6 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -62,7 +61,7 @@ model Address {
   address String
   owner User @relation(fields:[userId], references: [id])
   userId Int
-  order Order @relation(fields:[orderId], references: [id])
+  orders Order[]
   orderId Int @unique
 }
 
@@ -84,20 +83,32 @@ model Product {
 model Order {
   id Int @id @default(autoincrement())
   status OrderStatus
-  products Int[]
-  sizes String[]
-  quantities Int[]
+  orderProducts OrderProduct[]
   subtotal Decimal @db.Decimal(10,2)
-  address Address?
+  address Address @relation(fields:[addressId], references:[id])
+  addressId Int
   owner User @relation(fields:[userId], references:[id])
   userId Int
   payment Payment?
+
 }
+
+model OrderProduct {
+  id Int @id @default(autoincrement())
+  productId Int
+  name String
+  size String 
+  quantity Int 
+  image String
+  order Order @relation(fields:[orderId], references:[id])
+  orderId Int 
+}
+
 
 model Payment{
   id Int @id @default(autoincrement())
   intent String?
-  method String @default("Iyzico")
+  method String @default("Nakit")
   status PaymentStatus
   order Order @relation(fields:[orderId], references:[id])
   orderId Int @unique
@@ -106,14 +117,23 @@ model Payment{
 
 model Cart {
   id Int @id @default(autoincrement())
-  products Int[]
-  sizes String[]
-  quantities Int[]
-  subtotal Decimal @db.Decimal(10,2)
+  cartProducts CartProduct[]
+  subtotal Decimal @db.Decimal(10,2) @default(0)
   user User @relation(fields:[userId], references:[id])
   userId Int @unique
- 
 
+}
+
+model CartProduct {
+  id Int @id @default(autoincrement())
+  productId Int
+  name String
+  size String 
+  quantity Int
+  image String
+  cart Cart @relation(fields:[cartId], references:[id])
+  cartId Int 
+  price Decimal @db.Decimal(10,2)
 }
 
 model Campaign {

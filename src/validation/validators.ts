@@ -15,6 +15,21 @@ const UserUpdateValidator = z.object({
 
 })
 
+
+const CartProductValidator = z.array(z.object({
+    productId: z.number(),
+    name:z.string().min(3, {error: (iss) => `${iss.input} must have at least 3 characters!`}),
+    size: z.string("Please enter a size"),
+    quantity: z.number(),
+    cartId: z.number(),
+    image: z.string(),
+    price:z.string().regex(/^\d+(\.\d+)?$/, "Invalid decimal format")
+}))
+
+const CartValidator = z.object({
+    userId: z.number()
+})
+
 const UserUpdatePassword = z.object({
     token: z.string("Please enter a valid token"),
     password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])\S{8,}$/,{error: `Password must have at least 8 characters one lowercase letter, one uppercase letter, one number, one special character, and no spaces.`}),
@@ -73,5 +88,7 @@ export {
      UserUpdatePassword,
      ProductValidator,
      CategoryValidator,
-     CampaignValidator
+     CampaignValidator,
+     CartProductValidator,
+     CartValidator
     }

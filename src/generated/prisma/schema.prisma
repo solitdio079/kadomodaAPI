@@ -2,7 +2,6 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -52,17 +51,17 @@ model User {
 }
 
 model Address {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
   zipcode String
   city    String
-  country String @default("Türkiye")
+  country String  @default("Türkiye")
   phone   String
   address String
-  owner   User   @relation(fields: [userId], references: [id])
+  owner   User    @relation(fields: [userId], references: [id])
   userId  Int
-  order   Order  @relation(fields: [orderId], references: [id])
-  orderId Int    @unique
+  orders  Order[]
+  orderId Int     @unique
 }
 
 model Product {
@@ -75,41 +74,61 @@ model Product {
   images     String[] @default([])
   variant    String
   campaign   Campaign @relation(fields: [campaignId], references: [id])
-  campaignId Int
+  campaignId Int      @default(0)
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
+  categoryId Int      @default(0)
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  status     OrderStatus
-  products   Int[]
-  sizes      String[]
-  quantities Int[]
-  subtotal   Decimal     @db.Decimal(10, 2)
-  address    Address?
-  owner      User        @relation(fields: [userId], references: [id])
-  userId     Int
-  payment    Payment?
+  id            Int            @id @default(autoincrement())
+  status        OrderStatus
+  orderProducts OrderProduct[]
+  subtotal      Decimal        @db.Decimal(10, 2)
+  address       Address        @relation(fields: [addressId], references: [id])
+  addressId     Int
+  owner         User           @relation(fields: [userId], references: [id])
+  userId        Int
+  payment       Payment?
+}
+
+model OrderProduct {
+  id        Int    @id @default(autoincrement())
+  productId Int
+  name      String
+  size      String
+  quantity  Int
+  image     String
+  order     Order  @relation(fields: [orderId], references: [id])
+  orderId   Int
 }
 
 model Payment {
   id      Int           @id @default(autoincrement())
   intent  String?
-  method  String        @default("Iyzico")
+  method  String        @default("Nakit")
   status  PaymentStatus
   order   Order         @relation(fields: [orderId], references: [id])
   orderId Int           @unique
 }
 
 model Cart {
-  id         Int      @id @default(autoincrement())
-  products   Int[]
-  sizes      String[]
-  quantities Int[]
-  subtotal   Decimal  @db.Decimal(10, 2)
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @unique
+  id           Int           @id @default(autoincrement())
+  cartProducts CartProduct[]
+  subtotal     Decimal       @default(0) @db.Decimal(10, 2)
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int           @unique
+}
+
+model CartProduct {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  name      String
+  size      String
+  quantity  Int
+  image     String
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  price     Decimal @db.Decimal(10, 2)
 }
 
 model Campaign {

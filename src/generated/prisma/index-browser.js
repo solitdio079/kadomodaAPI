@@ -159,11 +159,19 @@ exports.Prisma.ProductScalarFieldEnum = {
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   status: 'status',
-  products: 'products',
-  sizes: 'sizes',
-  quantities: 'quantities',
   subtotal: 'subtotal',
+  addressId: 'addressId',
   userId: 'userId'
+};
+
+exports.Prisma.OrderProductScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  size: 'size',
+  quantity: 'quantity',
+  image: 'image',
+  orderId: 'orderId'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -176,11 +184,19 @@ exports.Prisma.PaymentScalarFieldEnum = {
 
 exports.Prisma.CartScalarFieldEnum = {
   id: 'id',
-  products: 'products',
-  sizes: 'sizes',
-  quantities: 'quantities',
   subtotal: 'subtotal',
   userId: 'userId'
+};
+
+exports.Prisma.CartProductScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  size: 'size',
+  quantity: 'quantity',
+  image: 'image',
+  cartId: 'cartId',
+  price: 'price'
 };
 
 exports.Prisma.CampaignScalarFieldEnum = {
@@ -259,8 +275,10 @@ exports.Prisma.ModelName = {
   Address: 'Address',
   Product: 'Product',
   Order: 'Order',
+  OrderProduct: 'OrderProduct',
   Payment: 'Payment',
   Cart: 'Cart',
+  CartProduct: 'CartProduct',
   Campaign: 'Campaign',
   Category: 'Category',
   Post: 'Post',

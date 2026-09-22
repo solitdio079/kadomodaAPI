@@ -1,5 +1,5 @@
 import * as z from "zod"
-import {Role,Status} from "../generated/prisma/index.js"
+import {Role,Status, OrderStatus, PaymentStatus} from "../generated/prisma/index.js"
 
 const UserValidator = z.object({
     name: z.string().trim().min(2,"You must enter your name!").normalize(),
@@ -15,6 +15,23 @@ const UserUpdateValidator = z.object({
 
 })
 
+const bulkProductValidator = z.object({
+  name: z.string().trim().min(1),
+  sizes: z.array(z.string().trim().min(1)),
+  total_qty: z.number().int().min(0).max(2147483647),
+
+  // Decimal(10,2): up to 8 integer digits and 2 decimal places.
+  // This endpoint accepts nonnegative prices as strings.
+  price: z.string().regex(
+    /^\d{1,8}(\.\d{1,2})?$/,
+    "Price must be a nonnegative amount with up to 2 decimal places",
+  ),
+
+  variant: z.string().trim().min(1),
+}).strict();
+
+const bulkUploadSchema = z.array(bulkProductValidator).min(1).max(1000);
+
 const AddressValidator = z.object({
     name: z.string().min(2, {error: (iss) => `${iss.input} must have at least 3 characters!`}),
     phone:z.string().regex(/^\+?[0-9]{7,15}$/, "Invalid phone format"),
@@ -25,6 +42,15 @@ const AddressValidator = z.object({
     userId: z.number("We need an owner!")
 })
 
+const OrderProductValidator = z.array(z.object({
+    productId: z.number(),
+    name:z.string().min(3, {error: (iss) => `${iss.input} must have at least 3 characters!`}),
+    size: z.string("Please enter a size"),
+    quantity: z.number(),
+    image: z.string(),
+    price:z.string().regex( /^\d{1,8}(\.\d{1,2})?$/, "Invalid decimal format")
+}))
+
 
 const CartProductValidator = z.array(z.object({
     productId: z.number(),
@@ -33,13 +59,26 @@ const CartProductValidator = z.array(z.object({
     quantity: z.number(),
     cartId: z.number(),
     image: z.string(),
-    price:z.string().regex(/^\d+(\.\d+)?$/, "Invalid decimal format")
+    price:z.string().regex( /^\d{1,8}(\.\d{1,2})?$/, "Invalid decimal format")
 }))
 
 const CartValidator = z.object({
     userId: z.number()
 })
 
+const OrderValidator = z.object({
+    status: z.enum(OrderStatus),
+    addressId: z.number("Please choose an address"),
+    orderProducts: OrderProductValidator,
+    userId: z.number("Please choose a user")
+})
+
+const PaymentValidator = z.object({
+    status: z.enum(PaymentStatus),
+    orderId: z.number("Order ID is missing"),
+    intent:z.string().optional(),
+    method: z.string().optional()
+})
 const UserUpdatePassword = z.object({
     token: z.string("Please enter a valid token"),
     password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])\S{8,}$/,{error: `Password must have at least 8 characters one lowercase letter, one uppercase letter, one number, one special character, and no spaces.`}),
@@ -71,7 +110,7 @@ const ProductValidator = z.object({
     details: z.string().min(10, {error: (iss) => `${iss.input} must have at least 10 characters!`}),
     sizesString: z.string().regex(/^\w+(?:,\w+)*$/,{error: (iss) => `${iss.input} must have at comma separated words.`}),
     total_qty: z.number("Please proviide a total quantity"),
-    price: z.string().regex(/^\d+(\.\d+)?$/, "Invalid decimal format"),
+    price: z.string().regex( /^\d{1,8}(\.\d{1,2})?$/, "Invalid decimal format"),
     campaignId: z.number().optional(),
     variant: z.string("Please provide a variant"),
     categoryId: z.number().optional()
@@ -101,5 +140,10 @@ export {
      CampaignValidator,
      CartProductValidator,
      CartValidator,
-     AddressValidator
+     AddressValidator,
+     OrderValidator,
+     PaymentValidator,
+     OrderProductValidator,
+     bulkProductValidator,
+     bulkUploadSchema
     }

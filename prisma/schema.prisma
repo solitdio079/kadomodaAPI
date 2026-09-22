@@ -81,7 +81,7 @@ model Product {
 
 model Order {
   id Int @id @default(autoincrement())
-  status OrderStatus
+  status OrderStatus @default(PROCESSING)
   orderProducts OrderProduct[]
   subtotal Decimal @db.Decimal(10,2)
   address Address @relation(fields:[addressId], references:[id])
@@ -89,7 +89,6 @@ model Order {
   owner User @relation(fields:[userId], references:[id])
   userId Int
   payment Payment?
-
 }
 
 model OrderProduct {

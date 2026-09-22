@@ -17333,7 +17333,7 @@ export namespace Prisma {
   }
 
   export type OrderCreateInput = {
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     orderProducts?: OrderProductCreateNestedManyWithoutOrderInput
     address: AddressCreateNestedOneWithoutOrdersInput
@@ -17343,7 +17343,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
     userId: number
@@ -17372,7 +17372,7 @@ export namespace Prisma {
 
   export type OrderCreateManyInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
     userId: number
@@ -19823,7 +19823,7 @@ export namespace Prisma {
   }
 
   export type OrderCreateWithoutOwnerInput = {
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     orderProducts?: OrderProductCreateNestedManyWithoutOrderInput
     address: AddressCreateNestedOneWithoutOrdersInput
@@ -19832,7 +19832,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutOwnerInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
     orderProducts?: OrderProductUncheckedCreateNestedManyWithoutOrderInput
@@ -20023,7 +20023,7 @@ export namespace Prisma {
   }
 
   export type OrderCreateWithoutAddressInput = {
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     orderProducts?: OrderProductCreateNestedManyWithoutOrderInput
     owner: UserCreateNestedOneWithoutOrdersInput
@@ -20032,7 +20032,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutAddressInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     userId: number
     orderProducts?: OrderProductUncheckedCreateNestedManyWithoutOrderInput
@@ -20412,7 +20412,7 @@ export namespace Prisma {
   }
 
   export type OrderCreateWithoutOrderProductsInput = {
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     address: AddressCreateNestedOneWithoutOrdersInput
     owner: UserCreateNestedOneWithoutOrdersInput
@@ -20421,7 +20421,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutOrderProductsInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
     userId: number
@@ -20462,7 +20462,7 @@ export namespace Prisma {
   }
 
   export type OrderCreateWithoutPaymentInput = {
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     orderProducts?: OrderProductCreateNestedManyWithoutOrderInput
     address: AddressCreateNestedOneWithoutOrdersInput
@@ -20471,7 +20471,7 @@ export namespace Prisma {
 
   export type OrderUncheckedCreateWithoutPaymentInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
     userId: number
@@ -21083,7 +21083,7 @@ export namespace Prisma {
 
   export type OrderCreateManyOwnerInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     addressId: number
   }
@@ -21205,7 +21205,7 @@ export namespace Prisma {
 
   export type OrderCreateManyAddressInput = {
     id?: number
-    status: $Enums.OrderStatus
+    status?: $Enums.OrderStatus
     subtotal: Decimal | DecimalJsLike | number | string
     userId: number
   }

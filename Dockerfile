@@ -7,13 +7,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci
+# Prisma and tsx are needed at runtime, even though listed as devDependencies.
+RUN npm ci --include=dev && npm cache clean --force
 
 COPY prisma.config.js tsconfig.json ./
 COPY prisma ./prisma
 COPY src ./src
 
-RUN npx prisma generate \
+RUN ./node_modules/.bin/prisma generate \
     && mkdir -p /data/uploads \
     && ln -sfn /data/uploads /app/public \
     && ln -sfn /data/uploads /public \
@@ -27,4 +28,5 @@ VOLUME ["/data/uploads"]
 
 USER node
 
-CMD ["sh", "-c", "export DIRECT_URL=\"${DIRECT_URL:-$DATABASE_URL}\"; npx prisma migrate deploy && exec npx tsx ./src/app.ts"]
+# Supply secrets at runtime; DIRECT_URL can override the migration connection.
+CMD ["sh", "-ec", ": \"${DATABASE_URL:?DATABASE_URL is required}\"; : \"${SECRET_KEY:?SECRET_KEY is required}\"; : \"${BREVO_API_KEY:?BREVO_API_KEY is required}\"; export DIRECT_URL=\"${DIRECT_URL:-$DATABASE_URL}\"; ./node_modules/.bin/prisma migrate deploy; exec ./node_modules/.bin/tsx ./src/app.ts"]

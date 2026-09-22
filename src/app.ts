@@ -12,10 +12,11 @@ app.use(express.static('public'));
 
 app.use("/auth", routes.auth)
 app.use("/posts", routes.post)
-app.use(passport.authenticate("jwt", { session: false }));
+app.use("/order", routes.order)
 app.use("/product", routes.product)
 app.use("/category", routes.category)
 app.use("/campaign", routes.campaign)
+app.use(passport.authenticate("jwt", { session: false }));
 app.use("/comments", routes.comment)
 app.use("/address", routes.address)
 app.use("/cart", routes.cart)

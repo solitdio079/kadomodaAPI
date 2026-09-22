@@ -3464,13 +3464,11 @@ export namespace Prisma {
   export type AddressAvgAggregateOutputType = {
     id: number | null
     userId: number | null
-    orderId: number | null
   }
 
   export type AddressSumAggregateOutputType = {
     id: number | null
     userId: number | null
-    orderId: number | null
   }
 
   export type AddressMinAggregateOutputType = {
@@ -3482,7 +3480,6 @@ export namespace Prisma {
     phone: string | null
     address: string | null
     userId: number | null
-    orderId: number | null
   }
 
   export type AddressMaxAggregateOutputType = {
@@ -3494,7 +3491,6 @@ export namespace Prisma {
     phone: string | null
     address: string | null
     userId: number | null
-    orderId: number | null
   }
 
   export type AddressCountAggregateOutputType = {
@@ -3506,7 +3502,6 @@ export namespace Prisma {
     phone: number
     address: number
     userId: number
-    orderId: number
     _all: number
   }
 
@@ -3514,13 +3509,11 @@ export namespace Prisma {
   export type AddressAvgAggregateInputType = {
     id?: true
     userId?: true
-    orderId?: true
   }
 
   export type AddressSumAggregateInputType = {
     id?: true
     userId?: true
-    orderId?: true
   }
 
   export type AddressMinAggregateInputType = {
@@ -3532,7 +3525,6 @@ export namespace Prisma {
     phone?: true
     address?: true
     userId?: true
-    orderId?: true
   }
 
   export type AddressMaxAggregateInputType = {
@@ -3544,7 +3536,6 @@ export namespace Prisma {
     phone?: true
     address?: true
     userId?: true
-    orderId?: true
   }
 
   export type AddressCountAggregateInputType = {
@@ -3556,7 +3547,6 @@ export namespace Prisma {
     phone?: true
     address?: true
     userId?: true
-    orderId?: true
     _all?: true
   }
 
@@ -3655,7 +3645,6 @@ export namespace Prisma {
     phone: string
     address: string
     userId: number
-    orderId: number
     _count: AddressCountAggregateOutputType | null
     _avg: AddressAvgAggregateOutputType | null
     _sum: AddressSumAggregateOutputType | null
@@ -3686,7 +3675,6 @@ export namespace Prisma {
     phone?: boolean
     address?: boolean
     userId?: boolean
-    orderId?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
     orders?: boolean | Address$ordersArgs<ExtArgs>
     _count?: boolean | AddressCountOutputTypeDefaultArgs<ExtArgs>
@@ -3701,7 +3689,6 @@ export namespace Prisma {
     phone?: boolean
     address?: boolean
     userId?: boolean
-    orderId?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["address"]>
 
@@ -3714,7 +3701,6 @@ export namespace Prisma {
     phone?: boolean
     address?: boolean
     userId?: boolean
-    orderId?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["address"]>
 
@@ -3727,10 +3713,9 @@ export namespace Prisma {
     phone?: boolean
     address?: boolean
     userId?: boolean
-    orderId?: boolean
   }
 
-  export type AddressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "zipcode" | "city" | "country" | "phone" | "address" | "userId" | "orderId", ExtArgs["result"]["address"]>
+  export type AddressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "zipcode" | "city" | "country" | "phone" | "address" | "userId", ExtArgs["result"]["address"]>
   export type AddressInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     orders?: boolean | Address$ordersArgs<ExtArgs>
@@ -3758,7 +3743,6 @@ export namespace Prisma {
       phone: string
       address: string
       userId: number
-      orderId: number
     }, ExtArgs["result"]["address"]>
     composites: {}
   }
@@ -4192,7 +4176,6 @@ export namespace Prisma {
     readonly phone: FieldRef<"Address", 'String'>
     readonly address: FieldRef<"Address", 'String'>
     readonly userId: FieldRef<"Address", 'Int'>
-    readonly orderId: FieldRef<"Address", 'Int'>
   }
     
 
@@ -16001,8 +15984,7 @@ export namespace Prisma {
     country: 'country',
     phone: 'phone',
     address: 'address',
-    userId: 'userId',
-    orderId: 'orderId'
+    userId: 'userId'
   };
 
   export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
@@ -16389,7 +16371,6 @@ export namespace Prisma {
     phone?: StringFilter<"Address"> | string
     address?: StringFilter<"Address"> | string
     userId?: IntFilter<"Address"> | number
-    orderId?: IntFilter<"Address"> | number
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     orders?: OrderListRelationFilter
   }
@@ -16403,14 +16384,12 @@ export namespace Prisma {
     phone?: SortOrder
     address?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
     owner?: UserOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
   }
 
   export type AddressWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    orderId?: number
     AND?: AddressWhereInput | AddressWhereInput[]
     OR?: AddressWhereInput[]
     NOT?: AddressWhereInput | AddressWhereInput[]
@@ -16423,7 +16402,7 @@ export namespace Prisma {
     userId?: IntFilter<"Address"> | number
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     orders?: OrderListRelationFilter
-  }, "id" | "orderId">
+  }, "id">
 
   export type AddressOrderByWithAggregationInput = {
     id?: SortOrder
@@ -16434,7 +16413,6 @@ export namespace Prisma {
     phone?: SortOrder
     address?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
     _count?: AddressCountOrderByAggregateInput
     _avg?: AddressAvgOrderByAggregateInput
     _max?: AddressMaxOrderByAggregateInput
@@ -16454,7 +16432,6 @@ export namespace Prisma {
     phone?: StringWithAggregatesFilter<"Address"> | string
     address?: StringWithAggregatesFilter<"Address"> | string
     userId?: IntWithAggregatesFilter<"Address"> | number
-    orderId?: IntWithAggregatesFilter<"Address"> | number
   }
 
   export type ProductWhereInput = {
@@ -17199,7 +17176,6 @@ export namespace Prisma {
     country?: string
     phone: string
     address: string
-    orderId: number
     owner: UserCreateNestedOneWithoutAddressesInput
     orders?: OrderCreateNestedManyWithoutAddressInput
   }
@@ -17213,7 +17189,6 @@ export namespace Prisma {
     phone: string
     address: string
     userId: number
-    orderId: number
     orders?: OrderUncheckedCreateNestedManyWithoutAddressInput
   }
 
@@ -17224,7 +17199,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
     owner?: UserUpdateOneRequiredWithoutAddressesNestedInput
     orders?: OrderUpdateManyWithoutAddressNestedInput
   }
@@ -17238,7 +17212,6 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
-    orderId?: IntFieldUpdateOperationsInput | number
     orders?: OrderUncheckedUpdateManyWithoutAddressNestedInput
   }
 
@@ -17251,7 +17224,6 @@ export namespace Prisma {
     phone: string
     address: string
     userId: number
-    orderId: number
   }
 
   export type AddressUpdateManyMutationInput = {
@@ -17261,7 +17233,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type AddressUncheckedUpdateManyInput = {
@@ -17273,7 +17244,6 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
-    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductCreateInput = {
@@ -18167,13 +18137,11 @@ export namespace Prisma {
     phone?: SortOrder
     address?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
   }
 
   export type AddressAvgOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
   }
 
   export type AddressMaxOrderByAggregateInput = {
@@ -18185,7 +18153,6 @@ export namespace Prisma {
     phone?: SortOrder
     address?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
   }
 
   export type AddressMinOrderByAggregateInput = {
@@ -18197,13 +18164,11 @@ export namespace Prisma {
     phone?: SortOrder
     address?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
   }
 
   export type AddressSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-    orderId?: SortOrder
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -19833,7 +19798,6 @@ export namespace Prisma {
     country?: string
     phone: string
     address: string
-    orderId: number
     orders?: OrderCreateNestedManyWithoutAddressInput
   }
 
@@ -19845,7 +19809,6 @@ export namespace Prisma {
     country?: string
     phone: string
     address: string
-    orderId: number
     orders?: OrderUncheckedCreateNestedManyWithoutAddressInput
   }
 
@@ -19996,7 +19959,6 @@ export namespace Prisma {
     phone?: StringFilter<"Address"> | string
     address?: StringFilter<"Address"> | string
     userId?: IntFilter<"Address"> | number
-    orderId?: IntFilter<"Address"> | number
   }
 
   export type OrderUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -20253,7 +20215,6 @@ export namespace Prisma {
     country?: string
     phone: string
     address: string
-    orderId: number
     owner: UserCreateNestedOneWithoutAddressesInput
   }
 
@@ -20266,7 +20227,6 @@ export namespace Prisma {
     phone: string
     address: string
     userId: number
-    orderId: number
   }
 
   export type AddressCreateOrConnectWithoutOrdersInput = {
@@ -20373,7 +20333,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
     owner?: UserUpdateOneRequiredWithoutAddressesNestedInput
   }
 
@@ -20386,7 +20345,6 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     userId?: IntFieldUpdateOperationsInput | number
-    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserUpsertWithoutOrdersInput = {
@@ -21121,7 +21079,6 @@ export namespace Prisma {
     country?: string
     phone: string
     address: string
-    orderId: number
   }
 
   export type OrderCreateManyOwnerInput = {
@@ -21198,7 +21155,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
     orders?: OrderUpdateManyWithoutAddressNestedInput
   }
 
@@ -21210,7 +21166,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
     orders?: OrderUncheckedUpdateManyWithoutAddressNestedInput
   }
 
@@ -21222,7 +21177,6 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
-    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderUpdateWithoutOwnerInput = {

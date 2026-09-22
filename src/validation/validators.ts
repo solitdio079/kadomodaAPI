@@ -15,6 +15,16 @@ const UserUpdateValidator = z.object({
 
 })
 
+const AddressValidator = z.object({
+    name: z.string().min(2, {error: (iss) => `${iss.input} must have at least 3 characters!`}),
+    phone:z.string().regex(/^\+?[0-9]{7,15}$/, "Invalid phone format"),
+    address: z.string().min(10,  {error: (iss) => `${iss.input} must have at least 3 characters!`}),
+    city: z.string("Please enter a city!"),
+    country: z.string("Please enter a country"),
+    zipCode: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9 -]{1,10}[A-Za-z0-9]$/, "Invalid zip code"),
+    userId: z.number("We need an owner!")
+})
+
 
 const CartProductValidator = z.array(z.object({
     productId: z.number(),
@@ -90,5 +100,6 @@ export {
      CategoryValidator,
      CampaignValidator,
      CartProductValidator,
-     CartValidator
+     CartValidator,
+     AddressValidator
     }

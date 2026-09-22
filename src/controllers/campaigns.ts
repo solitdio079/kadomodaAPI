@@ -23,6 +23,7 @@ async function validateCampaign(req:Request<CampaignParams,any,CampaignBody>, re
 
 }
 
+
 async function createCampaign(req:Request<CampaignParams,any,CampaignBody>, res:Response, next:NextFunction){
     // Permission checks
     if(!req.user) return res.status(403).json({error:"Unauthorized"})

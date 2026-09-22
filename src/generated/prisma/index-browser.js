@@ -139,8 +139,7 @@ exports.Prisma.AddressScalarFieldEnum = {
   country: 'country',
   phone: 'phone',
   address: 'address',
-  userId: 'userId',
-  orderId: 'orderId'
+  userId: 'userId'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {

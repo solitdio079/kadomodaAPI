@@ -15,12 +15,13 @@ import {
 
 import express, {Router} from "express"
 import upload, {uploadBulk} from "../utils/multerUpload.js"
+import verifyIfAdmin from "../utils/verifyIfAdmin.js"
 
 
 const router = Router()
 
-router.post("/", upload.array("images", 6) ,validateProduct, createOneProduct)
-router.post("/bulk", uploadBulk.single("file") , createBulkProducts)
+router.post("/",upload.array("images", 6) ,validateProduct, createOneProduct)
+router.post("/bulk", verifyIfAdmin,uploadBulk.single("file") , createBulkProducts)
 
 router.put("/:productId",upload.array("images", 6),validateProduct,putProduct)
 

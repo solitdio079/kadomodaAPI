@@ -73,10 +73,12 @@ model Product {
   price Decimal @db.Decimal(10,2)
   images String[] @default([])
   variant String
-  campaign Campaign @relation(fields: [campaignId], references: [id])
-  campaignId Int @default(0) 
+  campaign Campaign? @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  campaignId Int?
   category Category @relation(fields:[categoryId], references: [id])
-  categoryId Int @default(0)
+  categoryId Int
+  isDemo Boolean @default(false)
+  seedKey String? @unique
 }
 
 model Order {

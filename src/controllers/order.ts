@@ -1,251 +1,45 @@
-import {
-  OrderValidator,
-  OrderProductValidator,
-  PaymentValidator,
-} from "../validation/validators.js";
-
-import { type Request, type Response, type NextFunction } from "express";
-import { prisma } from "../lib/prisma.js";
-import {
-  Role,
-  Status,
-  OrderStatus,
-  PaymentStatus,
-} from "../generated/prisma/index.js";
-
-interface OrderParams {
-  orderId?: string;
+import type { Request, Response } from 'express';
+import { prisma } from '../lib/prisma.js';
+import { Prisma, type OrderStatus } from '../generated/prisma/index.js';
+import { idParam, requireUser, notFound, HttpError, validate } from '../middleware/http.js';
+import { orderStatusFields } from '../validation/commerce.js';
+const include = { payment: true, orderProducts: true, address: true };
+export const validateOrder = validate(orderStatusFields);
+// No order/payment creation until provider verification, per-size inventory,
+// shipping quotes, immutable address/price snapshots and idempotency are implemented.
+// This is deliberately not controlled by a runtime switch that could enable unsafe code.
+export function createOrder(_req: Request, res: Response) {
+  res.status(503).json({ code: 'CHECKOUT_UNAVAILABLE', error: 'Sipariş ve ödeme işlemleri henüz kullanıma açık değil.' });
 }
-
-interface OrderBody {
-  status: OrderStatus;
-  addressId: number;
-  orderProducts: OrderProductBody[];
-  userId: number;
-  payment?: PaymentBody;
+export async function getOrders(req: Request, res: Response) {
+  const user = requireUser(req);
+  res.json({ data: await prisma.order.findMany({ where: user.role === 'ADMIN' ? {} : { userId: user.id }, include, orderBy: { id: 'desc' }, take: 100 }) });
 }
-
-interface PaymentBody {
-  status: PaymentStatus;
-  intent?: string;
-  method?: string;
-  orderId: number;
+export async function getOneOrder(req: Request, res: Response) {
+  const user = requireUser(req);
+  const data = await prisma.order.findFirst({ where: { id: idParam(req.params.orderId), ...(user.role === 'ADMIN' ? {} : { userId: user.id }) }, include });
+  if (!data) notFound();
+  res.json({ data });
 }
-
-interface OrderProductBody {
-  productId: number;
-  name: string;
-  size: string;
-  quantity: number;
-  image: string;
-  price: string;
+export function canTransition(from: OrderStatus, to: OrderStatus, paid: boolean) {
+  if (from === to) return true;
+  if (from === 'PROCESSING' && to === 'IPTAL') return !paid;
+  if (from === 'PROCESSING' && to === 'KARGODA') return paid;
+  return from === 'KARGODA' && to === 'TESLIM_EDILDI' && paid;
 }
-
-function getSubtotal(cart: OrderProductBody[]) {
-  return cart.reduce(
-    (acc, curr) => (acc += parseFloat(curr.price) * curr.quantity),
-    0,
-  );
+export async function editOrder(req: Request, res: Response) {
+  const user = requireUser(req);
+  if (user.role !== 'ADMIN') throw new HttpError(403, 'ADMIN_REQUIRED', 'Bu işlem için yönetici yetkisi gerekiyor.');
+  const id = idParam(req.params.orderId), { status } = orderStatusFields.parse(req.body);
+  const data = await prisma.$transaction(async tx => {
+    const order = await tx.order.findUnique({ where: { id }, include: { payment: true } });
+    if (!order) notFound();
+    if (!canTransition(order.status, status, order.payment?.status === 'PAID'))
+      throw new HttpError(409, 'INVALID_TRANSITION', 'Sipariş bu duruma geçirilemez. Ödeme ve iade durumunu kontrol edin.');
+    return tx.order.update({ where: { id }, data: { status }, include });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  res.json({ data, message: 'Sipariş durumu güncellendi.' });
 }
-
-async function validateOrder(
-  req: Request<OrderParams, any, OrderBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  const result = OrderValidator.safeParse(req.body);
-  if (!result.success) {
-    next(result.error);
-  } else {
-    req.body = result.data;
-    next();
-  }
+export function deleteOrder(_req: Request, res: Response) {
+  res.status(405).set('Allow', 'GET, PUT, PATCH').json({ code: 'ORDER_DELETE_DISABLED', error: 'Sipariş kayıtları silinemez. Uygun siparişler iptal edilebilir.' });
 }
-
-async function validateOrderProduct(
-  req: Request<OrderParams, any, OrderProductBody[]>,
-  res: Response,
-  next: NextFunction,
-) {
-  const result = OrderProductValidator.safeParse(req.body);
-  if (!result.success) {
-    next(result.error);
-  } else {
-    req.body = result.data;
-    next();
-  }
-}
-
-async function createOrder(
-  req: Request<OrderParams, any, OrderBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  try {
-    const { status, addressId, orderProducts } = req.body;
-
-    const order = await prisma.order.create({
-      data: {
-        status,
-        addressId,
-        userId: req.user.id,
-        subtotal: getSubtotal(orderProducts),
-      },
-    });
-
-    await prisma.orderProduct.createMany({
-      data: orderProducts.map((item) => ({ ...item, orderId: order.id })),
-    });
-
-    await prisma.payment.create({
-      data: {
-        orderId: order.id,
-        status: PaymentStatus.UNPAID,
-      },
-    });
-
-    return res.json({ data: order, message: "Order created with success!" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function editOrder(
-  req: Request<OrderParams, any, OrderBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission Check
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-  //
-  const { orderId } = req.params;
-  if (typeof orderId !== "string")
-    return res.status(403).json({ error: "Order Id is missing" });
-
-  const checkOrder = await prisma.order.findUnique({
-    where: {
-      id: parseInt(orderId),
-    },
-  });
-
-  if (!checkOrder) return res.status(404).json({ error: "Order not found!" });
-
-  if (req.user.id !== checkOrder.userId && req.user.role !== Role.ADMIN)
-    return res.status(403).json({ error: "You are not the owner!" });
-
-  try {
-    const { status, addressId, userId, payment } = req.body;
-
-    await prisma.order.update({
-      where: {
-        id: parseInt(orderId),
-      },
-      data: {
-        status,
-        addressId,
-        userId,
-      },
-    });
-    if (payment) {
-      await prisma.payment.update({
-        where: {
-          orderId: checkOrder.id,
-        },
-        data: {
-          ...payment,
-        },
-      });
-    }
-
-    return res.json({ message: "order updated with success!" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getOrders(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  if (req.user.role === Role.ADMIN) {
-    const allOrders = await prisma.order.findMany({
-      include: {
-        payment: true,
-        orderProducts: true,
-        address: true,
-      },
-    });
-    return res.json({ data: allOrders });
-  }
-  const myOrders = await prisma.order.findMany({
-    where: {
-      userId: req.user.id,
-    },
-  });
-
-  return res.json({ data: myOrders });
-}
-
-async function getOneOrder(
-  req: Request<OrderParams, any, OrderBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-  const { orderId } = req.params;
-  if (typeof orderId !== "string")
-    return res.status(403).json({ error: "order id is missing!" });
-
-  const checkOrder = await prisma.order.findUnique({
-    where: {
-      id: parseInt(orderId),
-    },
-    include: {
-      payment: true,
-      orderProducts: true,
-      address: true,
-    },
-  });
-
-  if (!checkOrder)
-    return res.status(404).json({ error: "order does not exist!" });
-
-  if (req.user.role === Role.ADMIN) {
-    const order = await prisma.order.findUnique({
-      where: {
-        id: parseInt(orderId),
-      },
-    });
-    return res.json({ data: order });
-  }
-  if (checkOrder.userId !== req.user.id)
-    return res.status(403).json({ error: "Order is not yours!" });
-  return res.json({ data: checkOrder });
-}
-
-async function deleteOrder(
-  req: Request<OrderParams>,
-  res: Response,
-  next: NextFunction,
-) {
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  if (req.user.role !== Role.ADMIN)
-    return res.status(403).json({ error: "Unauthorized" });
-  const { orderId } = req.params;
-  if (typeof orderId !== "string")
-    return res.status(403).json({ error: "Order Id is missing" });
-
-  try {
-    await prisma.order.delete({
-      where: {
-        id: parseInt(orderId),
-      },
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export { validateOrder, createOrder, deleteOrder, editOrder, getOneOrder, getOrders };

@@ -1,22 +1,12 @@
-import {createCategory, getOneCategory, getAllCategories, editCategory, deleteCategory, validateCategory} from "../controllers/categories.js"
-import express ,{Router} from "express"
-import passport from "passport"
-
-
-const router = Router()
-
-router.use(express.json())
-router.get("/:categoryId", getOneCategory)
-router.get("/", getAllCategories)
-router.use(passport.authenticate("jwt", { session: false }));
-router.post("/", validateCategory, createCategory)
-
-router.put("/:categoryId", validateCategory, editCategory)
-
-router.delete("/:categoryId", deleteCategory)
-
-
-
-
-
-export default router
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.js';
+import admin from '../utils/verifyIfAdmin.js';
+import * as c from '../controllers/categories.js';
+const router = Router();
+router.get('/:categoryId', c.getOneCategory);
+router.get('/', c.getAllCategories);
+router.use(authenticate, admin);
+router.post('/', c.validateCategory, c.createCategory);
+router.put('/:categoryId', c.validateCategory, c.editCategory);
+router.delete('/:categoryId', c.deleteCategory);
+export default router;

@@ -1,45 +1,17 @@
-import {
-  validateProduct,
-  createOneProduct,
-  putProduct,
-  patchProduct,
-  deleteProduct,
-  getOneProduct,
-  getAllProducts,
-  getCampaignProducts,
-  getCategoryProducts,
-  createBulkProducts
-} from "../controllers/product.js"
-
-import passport from "passport"
-
-//import upload from "../utils/multerUpload.js"
-
-import express, {Router} from "express"
-import upload, {uploadBulk} from "../utils/multerUpload.js"
-import verifyIfAdmin from "../utils/verifyIfAdmin.js"
-
-
-const router = Router()
-
-
-
-router.get("/:productId", getOneProduct)
-router.get("/campaign/:campaignId", getCampaignProducts)
-router.get("/category/:categoryId", getCategoryProducts)
-router.get("/", getAllProducts)
-router.use(passport.authenticate("jwt", { session: false }));
-
-router.post("/",upload.array("images", 6) ,validateProduct, createOneProduct)
-router.post("/bulk", verifyIfAdmin,uploadBulk.single("file") , createBulkProducts)
-
-router.put("/:productId",upload.array("images", 6),validateProduct,putProduct)
-
-router.use(express.json())
-
-router.patch("/:productId", validateProduct,patchProduct)
-router.delete("/:productId", deleteProduct)
-
-
-export default router
-
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.js';
+import admin from '../utils/verifyIfAdmin.js';
+import upload, { uploadBulk, verifyImageUploads } from '../utils/multerUpload.js';
+import * as c from '../controllers/product.js';
+const router = Router();
+router.get('/campaign/:campaignId', c.getCampaignProducts);
+router.get('/category/:categoryId', c.getCategoryProducts);
+router.get('/:productId', c.getOneProduct);
+router.get('/', c.getAllProducts);
+router.use(authenticate, admin);
+router.post('/bulk', uploadBulk.single('file'), c.createBulkProducts);
+router.post('/', upload.array('images', 6), verifyImageUploads, c.validateProduct, c.createOneProduct);
+router.put('/:productId', upload.array('images', 6), verifyImageUploads, c.validateProduct, c.putProduct);
+router.patch('/:productId', upload.array('images', 6), verifyImageUploads, c.validateProductPatch, c.patchProduct);
+router.delete('/:productId', c.deleteProduct);
+export default router;

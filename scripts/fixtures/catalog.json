@@ -1,0 +1,122 @@
+[
+  {
+    "key": "1",
+    "name": "Drapeli Saten Elbise",
+    "details": "Akışkan silüeti ve zarif drapeleriyle günün her anına eşlik eden saten elbise.",
+    "category": "Elbiseler",
+    "price": "1890.00",
+    "stock": 12,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "color": "Şampanya",
+    "image": "satin-dress.png"
+  },
+  {
+    "key": "2",
+    "name": "Noir Klasik Blazer",
+    "details": "Güçlü bir silüet, yalın bir duruş. Klasik kesimiyle gardırobunuzun tamamlayıcı parçası.",
+    "category": "Ceketler",
+    "price": "2490.00",
+    "stock": 8,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "color": "Siyah",
+    "image": "black-blazer.png"
+  },
+  {
+    "key": "3",
+    "name": "Fiyonk Detaylı Bluz",
+    "details": "Fiyonk detayı ve yumuşak dokusuyla sade kombinlere zarif bir dokunuş.",
+    "category": "Üst Giyim",
+    "price": "1290.00",
+    "stock": 15,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "color": "Ekru",
+    "image": "silk-blouse.png"
+  },
+  {
+    "key": "4",
+    "name": "Rose Triko Takım",
+    "details": "Tonal renkler ve rahat bir silüet. Birlikte ya da ayrı ayrı kombinlenebilen iki parça.",
+    "category": "Takımlar",
+    "price": "1690.00",
+    "stock": 7,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "color": "Gül Kurusu",
+    "image": "rose-knit.png"
+  },
+  {
+    "key": "5",
+    "name": "Gold Line Midi Etek",
+    "details": "Işığı yakalayan dokusu ve midi boyuyla özel anlara eşlik eden zamansız etek.",
+    "category": "Etekler",
+    "price": "1450.00",
+    "stock": 9,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "color": "Altın",
+    "image": "gold-skirt.png"
+  },
+  {
+    "key": "6",
+    "name": "Ivory Gece Elbisesi",
+    "details": "Özel davetler için tasarlanan, fildişi tonunda sade ve etkileyici bir silüet.",
+    "category": "Elbiseler",
+    "price": "2990.00",
+    "stock": 4,
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "color": "Fildişi",
+    "image": "ivory-evening.png"
+  },
+  {
+    "key": "7",
+    "name": "Cocoa Trençkot",
+    "details": "Mevsim geçişlerinin vazgeçilmezi. Sıcak tonları ve kuşak detayıyla tamamlanan klasik trençkot.",
+    "category": "Dış Giyim",
+    "price": "2250.00",
+    "stock": 11,
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "color": "Kahverengi",
+    "image": "cocoa-trench.png"
+  },
+  {
+    "key": "8",
+    "name": "Pearl Omuz Çantası",
+    "details": "Gündüzden geceye, her stile uyum sağlayan kompakt ve zarif omuz çantası.",
+    "category": "Aksesuar",
+    "price": "1150.00",
+    "stock": 6,
+    "sizes": [
+      "Standart"
+    ],
+    "color": "İnci",
+    "image": "pearl-bag.png"
+  }
+]

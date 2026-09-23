@@ -64,18 +64,20 @@ model Address {
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name       String
-  details    String   @default("")
+  details    String    @default("")
   sizes      String[]
   total_qty  Int
-  price      Decimal  @db.Decimal(10, 2)
-  images     String[] @default([])
+  price      Decimal   @db.Decimal(10, 2)
+  images     String[]  @default([])
   variant    String
-  campaign   Campaign @relation(fields: [campaignId], references: [id])
-  campaignId Int      @default(0)
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int      @default(0)
+  campaign   Campaign? @relation(fields: [campaignId], references: [id], onDelete: Restrict)
+  campaignId Int?
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  isDemo     Boolean   @default(false)
+  seedKey    String?   @unique
 }
 
 model Order {

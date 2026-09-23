@@ -22,11 +22,13 @@ const opts: passportJwt.WithSecretOrKey = {
 passport.use(
   new JwtStrategy(opts, async function (
     payload: {
-      id: number
+      id: number;
+      purpose?: string;
     },
     done,
   ) {
     try {
+      if (payload.purpose !== 'access' || !Number.isInteger(payload.id) || payload.id < 1) return done(null, false);
       const user = await prisma.user.findUnique({
         where: {
           id: payload.id,

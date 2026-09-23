@@ -152,7 +152,9 @@ exports.Prisma.ProductScalarFieldEnum = {
   images: 'images',
   variant: 'variant',
   campaignId: 'campaignId',
-  categoryId: 'categoryId'
+  categoryId: 'categoryId',
+  isDemo: 'isDemo',
+  seedKey: 'seedKey'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {

@@ -10,6 +10,7 @@ async function sendUserToken(req: Request, res: Response, next: NextFunction) {
   if (!req.user) return res.status(401).json({ error: "User not logged in!" });
   const userData = {
     id: req.user.id,
+    purpose: 'access',
   };
 
   try {

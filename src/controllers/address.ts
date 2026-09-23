@@ -1,200 +1,33 @@
-import { AddressValidator } from "../validation/validators.js";
-import { prisma } from "../lib/prisma.js";
-
-import { type Request, type Response, type NextFunction } from "express";
-
-interface AddressBody {
-  name: string;
-  zipCode: string;
-  city: string;
-  country: string;
-  phone: string;
-  address: string;
-  userId: number;
+import type { Request, Response } from 'express';
+import { prisma } from '../lib/prisma.js';
+import { Prisma } from '../generated/prisma/index.js';
+import { addressFields } from '../validation/commerce.js';
+import { validate, requireUser, ownerWhere, idParam, notFound, HttpError } from '../middleware/http.js';
+export const validateAddress = validate(addressFields);
+function addressData(body: unknown) { const { zipCode, ...rest } = addressFields.parse(body); return { ...rest, zipcode: zipCode }; }
+export async function createAddress(req: Request, res: Response) {
+  const data = await prisma.address.create({ data: { ...addressData(req.body), userId: requireUser(req).id } });
+  res.status(201).json({ data });
 }
-
-interface AddressParams {
-  addressId?: string;
+export async function editAddress(req: Request, res: Response) {
+  const where = ownerWhere(req, idParam(req.params.addressId));
+  const data = await prisma.$transaction(async tx => {
+    if (!await tx.address.findFirst({ where })) notFound();
+    if (await tx.order.count({ where: { addressId: where.id } }))
+      throw new HttpError(409, 'ADDRESS_IN_USE', 'Siparişte kullanılan adres değiştirilemez. Yeni bir adres ekleyin.');
+    return tx.address.update({ where, data: addressData(req.body) });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  res.json({ data });
 }
-async function validateAddress(
-  req: Request<AddressParams, any, AddressBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  const result = AddressValidator.safeParse(req.body);
-  if (!result.success) {
-    next(result.error);
-  } else {
-    req.body = result.data;
-    next();
-  }
+export async function getUserAddresses(req: Request, res: Response) {
+  res.json({ data: await prisma.address.findMany({ where: { userId: requireUser(req).id }, orderBy: { id: 'desc' } }) });
 }
-
-async function createAddress(
-  req: Request<AddressParams, any, AddressBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  try {
-    const { name, zipCode, address, city, country, phone } = req.body;
-
-    const newAddress = await prisma.address.create({
-      data: {
-        userId: req.user.id,
-        name,
-        zipcode: zipCode,
-        address,
-        city,
-        country,
-        phone,
-      },
-    });
-
-    return res.json({ data: newAddress });
-  } catch (err) {
-    next(err);
-  }
+export async function getOneAddress(req: Request, res: Response) {
+  const data = await prisma.address.findFirst({ where: ownerWhere(req, idParam(req.params.addressId)) });
+  if (!data) notFound();
+  res.json({ data });
 }
-
-async function editAddress(
-  req: Request<AddressParams, any, AddressBody>,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  const { addressId } = req.params;
-  if (typeof addressId !== "string")
-    return res.status(403).json({ error: "Address id is not valid!" });
-
-  const checkAddress = await prisma.address.findUnique({
-    where: {
-      id: parseInt(addressId),
-    },
-  });
-
-  if (!checkAddress)
-    return res.status(404).json({ error: "Address does not exist!" });
-
-  try {
-    const { name, zipCode, address, city, country, phone } = req.body;
-
-    const newAddress = await prisma.address.update({
-      where: { id: parseInt(addressId) },
-      data: {
-        userId: req.user.id,
-        name,
-        zipcode: zipCode,
-        address,
-        city,
-        country,
-        phone,
-      },
-    });
-
-    return res.json({ data: newAddress });
-  } catch (err) {
-    next(err);
-  }
+export async function deleteAddress(req: Request, res: Response) {
+  await prisma.address.delete({ where: ownerWhere(req, idParam(req.params.addressId)) });
+  res.json({ message: 'Adres silindi.' });
 }
-
-async function getUserAddresses(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  try {
-    const addresses = await prisma.address.findMany({
-      where: {
-        userId: req.user.id,
-      },
-    });
-
-    return res.json({ data: addresses });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getOneAddress(
-  req: Request<AddressParams>,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  const { addressId } = req.params;
-  if (typeof addressId !== "string")
-    return res.status(403).json({ error: "Address id is not valid!" });
-
-  const checkAddress = await prisma.address.findUnique({
-    where: {
-      id: parseInt(addressId),
-    },
-  });
-
-  if (!checkAddress)
-    return res.status(404).json({ error: "Address does not exist!" });
-
-  try {
-    const address = await prisma.address.findUnique({
-      where: {
-        id: parseInt(addressId),
-      },
-    });
-
-    return res.json({ data: address });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function deleteAddress(
-  req: Request<AddressParams>,
-  res: Response,
-  next: NextFunction,
-) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-  const { addressId } = req.params;
-  if (typeof addressId !== "string")
-    return res.status(403).json({ error: "Address id is not valid!" });
-
-  const checkAddress = await prisma.address.findUnique({
-    where: {
-      id: parseInt(addressId),
-    },
-  });
-
-  if (!checkAddress)
-    return res.status(404).json({ error: "Address does not exist!" });
-
-  try {
-    await prisma.address.delete({
-      where: {
-        id: parseInt(addressId),
-      },
-    });
-
-    return res.json({ message: "Address deleted successfully!" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-export {
-  validateAddress,
-  createAddress,
-  editAddress,
-  getUserAddresses,
-  getOneAddress,
-  deleteAddress,
-};

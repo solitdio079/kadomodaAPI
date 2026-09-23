@@ -1,36 +1,48 @@
-import multer from "multer"
-import path from "node:path";
-
-const uploadDirectory = path.resolve("public");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDirectory);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const extension = path.extname(file.originalname).toLowerCase();
-    cb(null, file.fieldname + '-' + uniqueSuffix+"."+extension);
-  },
+import multer from 'multer';
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { mkdirSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import type { RequestHandler } from 'express';
+import { HttpError } from '../middleware/http.js';
+export const uploadDirectory = path.resolve(process.env.UPLOAD_DIR || 'public');
+// CSV/XLSX imports are private temporary files, never under the static web root.
+const importDirectory = path.resolve(process.env.IMPORT_DIR || '/tmp/kadomoda-imports');
+mkdirSync(uploadDirectory, { recursive: true });
+mkdirSync(importDirectory, { recursive: true });
+const storage = (directory: string) => multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, directory),
+  filename: (_req, file, cb) => cb(null, `${randomUUID()}${path.extname(file.originalname).toLowerCase()}`),
 });
-
-const upload = multer({ storage: storage });
-
-export const uploadBulk = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-
+const types: Record<string, string> = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp' };
+const upload = multer({
+  storage: storage(uploadDirectory), limits: { fileSize: 5 * 1024 * 1024, files: 6, fields: 20, fieldSize: 20000 },
   fileFilter: (_req, file, cb) => {
-    const extension = path.extname(file.originalname).toLowerCase();
-
-    if (![".csv", ".xlsx"].includes(extension)) {
-      cb(new Error("Upload a .csv or .xlsx file"));
-      return;
-    }
-
+    if (types[path.extname(file.originalname).toLowerCase()] !== file.mimetype)
+      return cb(new HttpError(400, 'INVALID_IMAGE', 'Yalnızca JPG, PNG veya WebP görselleri yükleyin.'));
     cb(null, true);
   },
 });
-
-
-export default upload
+export const verifyImageUploads: RequestHandler = async (req, _res, next) => {
+  try {
+    const files = req.file ? [req.file] : Array.isArray(req.files) ? req.files : [];
+    for (const file of files) {
+      const data = await readFile(file.path);
+      const ext = path.extname(file.filename);
+      const valid = ext === '.png' ? data.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+        : ext === '.webp' ? data.toString('ascii', 0, 4) === 'RIFF' && data.toString('ascii', 8, 12) === 'WEBP'
+        : data[0] === 255 && data[1] === 216 && data[2] === 255;
+      if (!valid) throw new HttpError(400, 'INVALID_IMAGE', 'Dosya içeriği geçerli bir görsel değil.');
+    }
+    next();
+  } catch (error) { next(error); }
+};
+export const uploadBulk = multer({
+  storage: storage(importDirectory), limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 3, fieldSize: 100 },
+  fileFilter: (_req, file, cb) => {
+    if (!['.csv', '.xlsx'].includes(path.extname(file.originalname).toLowerCase()))
+      return cb(new HttpError(400, 'INVALID_FILE', 'CSV veya XLSX dosyası yükleyin.'));
+    cb(null, true);
+  },
+});
+export default upload;

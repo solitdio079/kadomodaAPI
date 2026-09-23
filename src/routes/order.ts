@@ -1,17 +1,13 @@
-import  { validateOrder, createOrder, deleteOrder, editOrder, getOneOrder, getOrders } from "../controllers/order.js"
-
-
-import express, {Router} from "express"
-
-const router = Router()
-
-
-router.use(express.json())
-
-router.post("/", validateOrder, createOrder)
-router.get("/:orderId", getOneOrder)
-router.get("/", getOrders)
-router.put("/:orderId", validateOrder,editOrder)
-router.delete("/:orderId", deleteOrder)
-
-export default router
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.js';
+import admin from '../utils/verifyIfAdmin.js';
+import * as c from '../controllers/order.js';
+const router = Router();
+router.use(authenticate);
+router.post('/', c.createOrder);
+router.get('/:orderId', c.getOneOrder);
+router.get('/', c.getOrders);
+router.put('/:orderId', admin, c.validateOrder, c.editOrder);
+router.patch('/:orderId', admin, c.validateOrder, c.editOrder);
+router.delete('/:orderId', admin, c.deleteOrder);
+export default router;

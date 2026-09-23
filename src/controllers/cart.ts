@@ -1,190 +1,33 @@
-/*model Cart {
-  id Int @id @default(autoincrement())
-  products Int[]
-  sizes String[]
-  quantities Int[]
-  subtotal Decimal @db.Decimal(10,2)
-  user User @relation(fields:[userId], references:[id])
-  userId Int @unique
-}*/
-import { prisma } from "../lib/prisma.js";
-import {
-  CartValidator,
-  CartProductValidator,
-} from "../validation/validators.js";
-import { type Request, type Response, type NextFunction } from "express";
-
-interface CartParams {
-  cartId?: string;
+import type { Request, Response } from 'express';
+import { prisma } from '../lib/prisma.js';
+import { Prisma } from '../generated/prisma/index.js';
+import { cartFields } from '../validation/commerce.js';
+import { validate, idParam, requireUser, notFound } from '../middleware/http.js';
+import { priceLines } from '../services/pricing.js';
+export const validateCartProduct = validate(cartFields);
+export async function createCart(req: Request, res: Response) {
+  const user = requireUser(req);
+  const cart = await prisma.cart.upsert({ where: { userId: user.id }, create: { userId: user.id }, update: {}, include: { cartProducts: true } });
+  res.status(200).json({ data: cart });
 }
-
-interface CartProductBody {
-  productId: number;
-  name: string;
-  size: string;
-  quantity: number;
-  cartId: number;
-  image: string;
-  price: string;
+export const getCart = createCart;
+export async function editCart(req: Request, res: Response) {
+  const user = requireUser(req), id = idParam(req.params.cartId);
+  const cart = await prisma.$transaction(async tx => {
+    if (!await tx.cart.findFirst({ where: { id, userId: user.id } })) notFound();
+    const { quoted, subtotal } = await priceLines(tx, cartFields.parse(req.body));
+    await tx.cartProduct.deleteMany({ where: { cartId: id } });
+    await tx.cartProduct.createMany({ data: quoted.map(line => ({ ...line, cartId: id })) });
+    return tx.cart.update({ where: { id }, data: { subtotal }, include: { cartProducts: true } });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  res.json({ data: cart, message: 'Sepet güncellendi.' });
 }
-
-function getSubtotal(cart: CartProductBody[]) {
-  return cart.reduce(
-    (acc, curr) => (acc += parseFloat(curr.price) * curr.quantity),
-    0,
-  );
+export async function clearCart(req: Request, res: Response) {
+  const user = requireUser(req), id = idParam(req.params.cartId);
+  const cart = await prisma.$transaction(async tx => {
+    if (!await tx.cart.findFirst({ where: { id, userId: user.id } })) notFound();
+    await tx.cartProduct.deleteMany({ where: { cartId: id } });
+    return tx.cart.update({ where: { id }, data: { subtotal: 0 }, include: { cartProducts: true } });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  res.json({ data: cart, message: 'Sepet temizlendi.' });
 }
-
-async function validateCartProduct(
-  req: Request<CartParams, any, CartProductBody[]>,
-  res: Response,
-  next: NextFunction,
-) {
-  const result = CartProductValidator.safeParse(req.body);
-  if (!result.success) {
-    next(result.error);
-  } else {
-    req.body = result.data;
-    next();
-  }
-}
-
-async function createCart(req: Request, res: Response, next: NextFunction) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  try {
-    const cart = await prisma.cart.create({
-      data: {
-        userId: req.user.id,
-      },
-    });
-
-    return res
-      .status(201)
-      .json({ data: cart, message: "Cart created successfully!" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function editCart(
-  req: Request<CartParams, any, CartProductBody[]>,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    //
-    const { cartId } = req.params;
-    if (typeof cartId !== "string")
-      return res.status(403).json({ error: "cart id is missing!" });
-
-    // check cart
-
-    const checkCart = await prisma.cart.findUnique({
-      where: {
-        id: parseInt(cartId),
-      },
-      include: {
-        cartProducts: true,
-      },
-    });
-    if (!checkCart) return res.status(404).json({ error: "cart is missing!" });
-
-    //
-
-    // DELETE ALL the old cartproducts related to this cart
-    await prisma.cartProduct.deleteMany({
-      where: {
-        cartId: parseInt(cartId),
-      },
-    });
-
-    // create new cartProducts related to this cart
-    const newCartProducts = req.body;
-    await prisma.cartProduct.createMany({
-      data: newCartProducts,
-    });
-
-    // update cart subtotal to new Cart product subtotal
-    await prisma.cart.update({
-      where: {
-        id: parseInt(cartId),
-      },
-      data: {
-        subtotal: getSubtotal(newCartProducts),
-      },
-    });
-
-    return res.json({ message: "Cart updated with success" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function getCart(req: Request, res: Response, next: NextFunction) {
-  // Permission checks
-  if (!req.user) return res.status(403).json({ error: "Unauthorized" });
-
-  try {
-    let cart = await prisma.cart.findUnique({
-      where: {
-        userId: req.user.id,
-      },
-    });
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: {
-          userId: req.user.id,
-        },
-      });
-    }
-
-    return res.status(201).json({ data: cart });
-  } catch (err) {
-    next(err);
-  }
-}
-
-async function clearCart(
-  req: Request<CartParams, any, CartProductBody[]>,
-  res: Response,
-  next: NextFunction,
-) {
-    try{
-         //
-    const { cartId } = req.params;
-    if (typeof cartId !== "string")
-      return res.status(403).json({ error: "cart id is missing!" });
-
-    // check cart
-
-    const checkCart = await prisma.cart.findUnique({
-      where: {
-        id: parseInt(cartId),
-      },
-      include: {
-        cartProducts: true,
-      },
-    });
-    if (!checkCart) return res.status(404).json({ error: "cart is missing!" });
-
-    //
-
-    // DELETE ALL the old cartproducts related to this cart
-    await prisma.cartProduct.deleteMany({
-      where: {
-        cartId: parseInt(cartId),
-      },
-    });
-
-    return res.json({message: "Cart cleared successfully!"})
-
-
-    }catch(err){
-        next(err)
-    }
-
-}
-
-export { createCart, editCart, getCart,  validateCartProduct,clearCart };

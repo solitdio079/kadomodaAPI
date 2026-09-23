@@ -1,22 +1,14 @@
-import {createCampaign,validateCampaign,putCampaign,patchCampaign,getOneCampaign,getAllCampaign,deleteCampaign} from "../controllers/campaigns.js"
-import upload from "../utils/multerUpload.js"
-import express, {Router} from "express"
-import passport from "passport"
-const router = Router()
-
-
-router.get("/:campaignId", getOneCampaign)
-router.get("/", getAllCampaign)
-
-
-router.use(passport.authenticate("jwt", { session: false }));
-router.post("/",upload.single("image"),validateCampaign,createCampaign)
-router.put("/:campaignId",upload.single("image"),validateCampaign,putCampaign)
-
-router.use(express.json())
-
-router.patch("/:campaignId", validateCampaign, patchCampaign)
-
-
-router.delete("/:campaignId", deleteCampaign)
-export default router
+import { Router } from 'express';
+import { authenticate } from '../middleware/auth.js';
+import admin from '../utils/verifyIfAdmin.js';
+import upload, { verifyImageUploads } from '../utils/multerUpload.js';
+import * as c from '../controllers/campaigns.js';
+const router = Router();
+router.get('/:campaignId', c.getOneCampaign);
+router.get('/', c.getAllCampaign);
+router.use(authenticate, admin);
+router.post('/', upload.single('image'), verifyImageUploads, c.validateCampaign, c.createCampaign);
+router.put('/:campaignId', upload.single('image'), verifyImageUploads, c.validateCampaign, c.putCampaign);
+router.patch('/:campaignId', upload.single('image'), verifyImageUploads, c.validateCampaignPatch, c.patchCampaign);
+router.delete('/:campaignId', c.deleteCampaign);
+export default router;

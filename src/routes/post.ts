@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import passport from "passport"
 import verifyIfAdmin from "../utils/verifyIfAdmin.js"
-import upload from "../utils/multerUpload.js"
+import upload, { verifyImageUploads } from "../utils/multerUpload.js"
 import {
   getAllPosts,
   getOnePost,
@@ -20,7 +20,7 @@ import "../utils/passportJwt.js"
 const router = Router();
 
 
-router.post("/media", upload.array("media",4), uploadMedia)
+router.post("/media", passport.authenticate("jwt", { session: false }), verifyIfAdmin, upload.array("media",4), verifyImageUploads, uploadMedia)
 
 router.use(express.json());
 

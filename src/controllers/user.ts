@@ -269,7 +269,7 @@ async function updateUserPassword(
     const secret = process.env.SECRET_KEY || "INVALID"
     const decoded = jwt.verify(token, secret)
     if(typeof decoded === "string") return res.status(403).json({error: "Bad token!"})
-    if(decoded.id !== req.user.id) return res.status(403).json({error: "Bad token!"})
+    if(decoded.id !== req.user.id || decoded.purpose !== 'password_reset') return res.status(403).json({error: "Geçersiz şifre yenileme bağlantısı."})
     if(password !== confirmPassword) return res.status(401).json({error: "Password do not match"})
     
     const hashed = await hashPassword(password)
@@ -301,7 +301,7 @@ async function sendVerificationLink(
     return res.status(403).json({ error: "You are not allowed!" });
   const {password} = req.query
   try {
-    const token = createToken({ id: req.user.id }, 60 * 60);
+    const token = createToken({ id: req.user.id, purpose: password ? 'password_reset' : 'email_verify' }, 60 * 60);
 
     const clientDomain = process.env.CLIENT_LINK || "http://localhost:5173/";
 
@@ -346,7 +346,7 @@ async function verifyUserEmailVerificationToken(
     const decoded = jwt.verify(token, secret);
     if (typeof decoded === "string")
       return res.status(403).json({ error: "Bad token!" });
-    if (decoded.id !== req.user.id)
+    if (decoded.id !== req.user.id || decoded.purpose !== 'email_verify')
       return res
         .status(403)
         .json({ error: "Bad token, user ids do not match!" });

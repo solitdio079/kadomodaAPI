@@ -4656,6 +4656,8 @@ export namespace Prisma {
     variant: string | null
     campaignId: number | null
     categoryId: number | null
+    isDemo: boolean | null
+    seedKey: string | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -4667,6 +4669,8 @@ export namespace Prisma {
     variant: string | null
     campaignId: number | null
     categoryId: number | null
+    isDemo: boolean | null
+    seedKey: string | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -4680,6 +4684,8 @@ export namespace Prisma {
     variant: number
     campaignId: number
     categoryId: number
+    isDemo: number
+    seedKey: number
     _all: number
   }
 
@@ -4709,6 +4715,8 @@ export namespace Prisma {
     variant?: true
     campaignId?: true
     categoryId?: true
+    isDemo?: true
+    seedKey?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -4720,6 +4728,8 @@ export namespace Prisma {
     variant?: true
     campaignId?: true
     categoryId?: true
+    isDemo?: true
+    seedKey?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -4733,6 +4743,8 @@ export namespace Prisma {
     variant?: true
     campaignId?: true
     categoryId?: true
+    isDemo?: true
+    seedKey?: true
     _all?: true
   }
 
@@ -4831,8 +4843,10 @@ export namespace Prisma {
     price: Decimal
     images: string[]
     variant: string
-    campaignId: number
+    campaignId: number | null
     categoryId: number
+    isDemo: boolean
+    seedKey: string | null
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
     _sum: ProductSumAggregateOutputType | null
@@ -4865,7 +4879,9 @@ export namespace Prisma {
     variant?: boolean
     campaignId?: boolean
     categoryId?: boolean
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    isDemo?: boolean
+    seedKey?: boolean
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -4880,7 +4896,9 @@ export namespace Prisma {
     variant?: boolean
     campaignId?: boolean
     categoryId?: boolean
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    isDemo?: boolean
+    seedKey?: boolean
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -4895,7 +4913,9 @@ export namespace Prisma {
     variant?: boolean
     campaignId?: boolean
     categoryId?: boolean
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    isDemo?: boolean
+    seedKey?: boolean
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -4910,26 +4930,28 @@ export namespace Prisma {
     variant?: boolean
     campaignId?: boolean
     categoryId?: boolean
+    isDemo?: boolean
+    seedKey?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "details" | "sizes" | "total_qty" | "price" | "images" | "variant" | "campaignId" | "categoryId", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "details" | "sizes" | "total_qty" | "price" | "images" | "variant" | "campaignId" | "categoryId" | "isDemo" | "seedKey", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
   export type ProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    campaign?: boolean | Product$campaignArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
   }
 
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
-      campaign: Prisma.$CampaignPayload<ExtArgs>
+      campaign: Prisma.$CampaignPayload<ExtArgs> | null
       category: Prisma.$CategoryPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -4941,8 +4963,10 @@ export namespace Prisma {
       price: Prisma.Decimal
       images: string[]
       variant: string
-      campaignId: number
+      campaignId: number | null
       categoryId: number
+      isDemo: boolean
+      seedKey: string | null
     }, ExtArgs["result"]["product"]>
     composites: {}
   }
@@ -5337,7 +5361,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    campaign<T extends CampaignDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CampaignDefaultArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    campaign<T extends Product$campaignArgs<ExtArgs> = {}>(args?: Subset<T, Product$campaignArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5378,6 +5402,8 @@ export namespace Prisma {
     readonly variant: FieldRef<"Product", 'String'>
     readonly campaignId: FieldRef<"Product", 'Int'>
     readonly categoryId: FieldRef<"Product", 'Int'>
+    readonly isDemo: FieldRef<"Product", 'Boolean'>
+    readonly seedKey: FieldRef<"Product", 'String'>
   }
     
 
@@ -5776,6 +5802,25 @@ export namespace Prisma {
      * Limit how many Products to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Product.campaign
+   */
+  export type Product$campaignArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Campaign
+     */
+    omit?: CampaignOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    where?: CampaignWhereInput
   }
 
   /**
@@ -16000,7 +16045,9 @@ export namespace Prisma {
     images: 'images',
     variant: 'variant',
     campaignId: 'campaignId',
-    categoryId: 'categoryId'
+    categoryId: 'categoryId',
+    isDemo: 'isDemo',
+    seedKey: 'seedKey'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -16446,9 +16493,11 @@ export namespace Prisma {
     price?: DecimalFilter<"Product"> | Decimal | DecimalJsLike | number | string
     images?: StringNullableListFilter<"Product">
     variant?: StringFilter<"Product"> | string
-    campaignId?: IntFilter<"Product"> | number
+    campaignId?: IntNullableFilter<"Product"> | number | null
     categoryId?: IntFilter<"Product"> | number
-    campaign?: XOR<CampaignScalarRelationFilter, CampaignWhereInput>
+    isDemo?: BoolFilter<"Product"> | boolean
+    seedKey?: StringNullableFilter<"Product"> | string | null
+    campaign?: XOR<CampaignNullableScalarRelationFilter, CampaignWhereInput> | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
   }
 
@@ -16461,14 +16510,17 @@ export namespace Prisma {
     price?: SortOrder
     images?: SortOrder
     variant?: SortOrder
-    campaignId?: SortOrder
+    campaignId?: SortOrderInput | SortOrder
     categoryId?: SortOrder
+    isDemo?: SortOrder
+    seedKey?: SortOrderInput | SortOrder
     campaign?: CampaignOrderByWithRelationInput
     category?: CategoryOrderByWithRelationInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    seedKey?: string
     AND?: ProductWhereInput | ProductWhereInput[]
     OR?: ProductWhereInput[]
     NOT?: ProductWhereInput | ProductWhereInput[]
@@ -16479,11 +16531,12 @@ export namespace Prisma {
     price?: DecimalFilter<"Product"> | Decimal | DecimalJsLike | number | string
     images?: StringNullableListFilter<"Product">
     variant?: StringFilter<"Product"> | string
-    campaignId?: IntFilter<"Product"> | number
+    campaignId?: IntNullableFilter<"Product"> | number | null
     categoryId?: IntFilter<"Product"> | number
-    campaign?: XOR<CampaignScalarRelationFilter, CampaignWhereInput>
+    isDemo?: BoolFilter<"Product"> | boolean
+    campaign?: XOR<CampaignNullableScalarRelationFilter, CampaignWhereInput> | null
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
-  }, "id">
+  }, "id" | "seedKey">
 
   export type ProductOrderByWithAggregationInput = {
     id?: SortOrder
@@ -16494,8 +16547,10 @@ export namespace Prisma {
     price?: SortOrder
     images?: SortOrder
     variant?: SortOrder
-    campaignId?: SortOrder
+    campaignId?: SortOrderInput | SortOrder
     categoryId?: SortOrder
+    isDemo?: SortOrder
+    seedKey?: SortOrderInput | SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
@@ -16515,8 +16570,10 @@ export namespace Prisma {
     price?: DecimalWithAggregatesFilter<"Product"> | Decimal | DecimalJsLike | number | string
     images?: StringNullableListFilter<"Product">
     variant?: StringWithAggregatesFilter<"Product"> | string
-    campaignId?: IntWithAggregatesFilter<"Product"> | number
+    campaignId?: IntNullableWithAggregatesFilter<"Product"> | number | null
     categoryId?: IntWithAggregatesFilter<"Product"> | number
+    isDemo?: BoolWithAggregatesFilter<"Product"> | boolean
+    seedKey?: StringNullableWithAggregatesFilter<"Product"> | string | null
   }
 
   export type OrderWhereInput = {
@@ -17254,8 +17311,10 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
+    isDemo?: boolean
+    seedKey?: string | null
     campaign?: CampaignCreateNestedOneWithoutProductsInput
-    category?: CategoryCreateNestedOneWithoutProductsInput
+    category: CategoryCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -17267,8 +17326,10 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    campaignId?: number
-    categoryId?: number
+    campaignId?: number | null
+    categoryId: number
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductUpdateInput = {
@@ -17279,7 +17340,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaign?: CampaignUpdateOneRequiredWithoutProductsNestedInput
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    campaign?: CampaignUpdateOneWithoutProductsNestedInput
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
   }
 
@@ -17292,8 +17355,10 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaignId?: IntFieldUpdateOperationsInput | number
+    campaignId?: NullableIntFieldUpdateOperationsInput | number | null
     categoryId?: IntFieldUpdateOperationsInput | number
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductCreateManyInput = {
@@ -17305,8 +17370,10 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    campaignId?: number
-    categoryId?: number
+    campaignId?: number | null
+    categoryId: number
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductUpdateManyMutationInput = {
@@ -17317,6 +17384,8 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUncheckedUpdateManyInput = {
@@ -17328,8 +17397,10 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaignId?: IntFieldUpdateOperationsInput | number
+    campaignId?: NullableIntFieldUpdateOperationsInput | number | null
     categoryId?: IntFieldUpdateOperationsInput | number
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrderCreateInput = {
@@ -18190,9 +18261,20 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
-  export type CampaignScalarRelationFilter = {
-    is?: CampaignWhereInput
-    isNot?: CampaignWhereInput
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type CampaignNullableScalarRelationFilter = {
+    is?: CampaignWhereInput | null
+    isNot?: CampaignWhereInput | null
   }
 
   export type CategoryScalarRelationFilter = {
@@ -18211,6 +18293,8 @@ export namespace Prisma {
     variant?: SortOrder
     campaignId?: SortOrder
     categoryId?: SortOrder
+    isDemo?: SortOrder
+    seedKey?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
@@ -18230,6 +18314,8 @@ export namespace Prisma {
     variant?: SortOrder
     campaignId?: SortOrder
     categoryId?: SortOrder
+    isDemo?: SortOrder
+    seedKey?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -18241,6 +18327,8 @@ export namespace Prisma {
     variant?: SortOrder
     campaignId?: SortOrder
     categoryId?: SortOrder
+    isDemo?: SortOrder
+    seedKey?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
@@ -18265,6 +18353,22 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type EnumOrderStatusFilter<$PrismaModel = never> = {
@@ -19032,10 +19136,12 @@ export namespace Prisma {
     push?: string | string[]
   }
 
-  export type CampaignUpdateOneRequiredWithoutProductsNestedInput = {
+  export type CampaignUpdateOneWithoutProductsNestedInput = {
     create?: XOR<CampaignCreateWithoutProductsInput, CampaignUncheckedCreateWithoutProductsInput>
     connectOrCreate?: CampaignCreateOrConnectWithoutProductsInput
     upsert?: CampaignUpsertWithoutProductsInput
+    disconnect?: CampaignWhereInput | boolean
+    delete?: CampaignWhereInput | boolean
     connect?: CampaignWhereUniqueInput
     update?: XOR<XOR<CampaignUpdateToOneWithWhereWithoutProductsInput, CampaignUpdateWithoutProductsInput>, CampaignUncheckedUpdateWithoutProductsInput>
   }
@@ -19046,6 +19152,14 @@ export namespace Prisma {
     upsert?: CategoryUpsertWithoutProductsInput
     connect?: CategoryWhereUniqueInput
     update?: XOR<XOR<CategoryUpdateToOneWithWhereWithoutProductsInput, CategoryUpdateWithoutProductsInput>, CategoryUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type OrderProductCreateNestedManyWithoutOrderInput = {
@@ -19662,6 +19776,33 @@ export namespace Prisma {
     _sum?: NestedDecimalFilter<$PrismaModel>
     _min?: NestedDecimalFilter<$PrismaModel>
     _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
@@ -20690,7 +20831,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    category?: CategoryCreateNestedOneWithoutProductsInput
+    isDemo?: boolean
+    seedKey?: string | null
+    category: CategoryCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateWithoutCampaignInput = {
@@ -20702,7 +20845,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    categoryId?: number
+    categoryId: number
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductCreateOrConnectWithoutCampaignInput = {
@@ -20743,8 +20888,10 @@ export namespace Prisma {
     price?: DecimalFilter<"Product"> | Decimal | DecimalJsLike | number | string
     images?: StringNullableListFilter<"Product">
     variant?: StringFilter<"Product"> | string
-    campaignId?: IntFilter<"Product"> | number
+    campaignId?: IntNullableFilter<"Product"> | number | null
     categoryId?: IntFilter<"Product"> | number
+    isDemo?: BoolFilter<"Product"> | boolean
+    seedKey?: StringNullableFilter<"Product"> | string | null
   }
 
   export type ProductCreateWithoutCategoryInput = {
@@ -20755,6 +20902,8 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
+    isDemo?: boolean
+    seedKey?: string | null
     campaign?: CampaignCreateNestedOneWithoutProductsInput
   }
 
@@ -20767,7 +20916,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    campaignId?: number
+    campaignId?: number | null
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -21317,7 +21468,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    categoryId?: number
+    categoryId: number
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductUpdateWithoutCampaignInput = {
@@ -21328,6 +21481,8 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
     category?: CategoryUpdateOneRequiredWithoutProductsNestedInput
   }
 
@@ -21341,6 +21496,8 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
     categoryId?: IntFieldUpdateOperationsInput | number
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUncheckedUpdateManyWithoutCampaignInput = {
@@ -21353,6 +21510,8 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
     categoryId?: IntFieldUpdateOperationsInput | number
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductCreateManyCategoryInput = {
@@ -21364,7 +21523,9 @@ export namespace Prisma {
     price: Decimal | DecimalJsLike | number | string
     images?: ProductCreateimagesInput | string[]
     variant: string
-    campaignId?: number
+    campaignId?: number | null
+    isDemo?: boolean
+    seedKey?: string | null
   }
 
   export type ProductUpdateWithoutCategoryInput = {
@@ -21375,7 +21536,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaign?: CampaignUpdateOneRequiredWithoutProductsNestedInput
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
+    campaign?: CampaignUpdateOneWithoutProductsNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutCategoryInput = {
@@ -21387,7 +21550,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaignId?: IntFieldUpdateOperationsInput | number
+    campaignId?: NullableIntFieldUpdateOperationsInput | number | null
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -21399,7 +21564,9 @@ export namespace Prisma {
     price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     images?: ProductUpdateimagesInput | string[]
     variant?: StringFieldUpdateOperationsInput | string
-    campaignId?: IntFieldUpdateOperationsInput | number
+    campaignId?: NullableIntFieldUpdateOperationsInput | number | null
+    isDemo?: BoolFieldUpdateOperationsInput | boolean
+    seedKey?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CommentCreateManyParentInput = {

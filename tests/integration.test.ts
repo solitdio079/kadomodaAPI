@@ -124,3 +124,33 @@ test('bootstrap is idempotent, does not reset passwords, seeds have valid relati
   const seeded=await prisma.product.findUniqueOrThrow({where:{id:ids[0]}}); assert.ok(seeded.categoryId > 0); assert.equal(seeded.campaignId,null); assert.ok(seeded.seedKey?.startsWith('luxury-preview-v1:'));
   assert.equal((await request(`/product/${ids[0]}`,{method:'DELETE',token:adminToken})).status,200);
 });
+
+test('site content drafts stay private, publication requires admin and complete content, stale writes fail', async () => {
+  assert.deepEqual((await request('/site-content')).body.data, []);
+  assert.equal((await request('/site-content/admin')).status, 401);
+  assert.equal((await request('/site-content/admin', { token: ownerToken })).status, 403);
+  const initial = await request('/site-content/admin', { token: adminToken });
+  assert.equal(initial.body.data.length, 6);
+  const draft = { revision: 0, action: 'save', content: { body: 'Private draft — not ready' } };
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: ownerToken, body: draft })).status, 403);
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: draft })).status, 200);
+  assert.deepEqual((await request('/site-content')).body.data, []);
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: draft })).status, 409);
+  const publish = { revision: 1, action: 'publish', confirmed: true, content: { body: 'Mağazamız hakkında test metni. '.repeat(6) } };
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: { ...publish, confirmed: false } })).status, 400);
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: { ...publish, content: { body: 'Too short' } } })).status, 400);
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: publish })).status, 200);
+  assert.equal((await request('/site-content')).body.data[0].content.body, publish.content.body.trim());
+  const secretDraft = { revision: 2, action: 'save', content: { body: 'Unpublished changes' } };
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: secretDraft })).status, 200);
+  const visible = await request('/site-content');
+  assert.equal(visible.body.data[0].content.body, publish.content.body.trim());
+  assert.ok(!JSON.stringify(visible.body).includes('Unpublished changes'));
+  assert.equal((await request('/site-content/admin/about', { method: 'PUT', token: adminToken, body: { ...secretDraft, revision: 3, action: 'unpublish' } })).status, 200);
+  assert.deepEqual((await request('/site-content')).body.data, []);
+  const business = initial.body.data.find((row: { slug: string }) => row.slug === 'business').draft;
+  assert.equal((await request('/site-content/admin/business', { method: 'PUT', token: adminToken, body: { revision: 0, action: 'publish', confirmed: true, content: business } })).status, 400);
+  const complete = { ...business, legalName: 'Test İşletmesi', address: 'Test Mahallesi Numara 1 İstanbul', email: 'test@example.test', phone: '+905551234567', returnAddress: 'Test İade Adresi Numara 1 İstanbul', taxOffice: 'Test Dairesi', taxNumber: '1234567890', shippingFee: 'Test kargo bedeli', dispatchTime: 'Test hazırlık süresi', deliveryTime: 'Test teslimat süresi' };
+  assert.equal((await request('/site-content/admin/business', { method: 'PUT', token: adminToken, body: { revision: 0, action: 'publish', confirmed: true, content: complete } })).status, 200);
+  assert.equal((await request('/site-content')).body.data[0].content.legalName, 'Test İşletmesi');
+});

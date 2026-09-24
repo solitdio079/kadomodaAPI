@@ -73,6 +73,11 @@ export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
  * 
  */
 export type Comment = $Result.DefaultSelection<Prisma.$CommentPayload>
+/**
+ * Model SiteContent
+ * 
+ */
+export type SiteContent = $Result.DefaultSelection<Prisma.$SiteContentPayload>
 
 /**
  * Enums
@@ -370,6 +375,16 @@ export class PrismaClient<
     * ```
     */
   get comment(): Prisma.CommentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.siteContent`: Exposes CRUD operations for the **SiteContent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SiteContents
+    * const siteContents = await prisma.siteContent.findMany()
+    * ```
+    */
+  get siteContent(): Prisma.SiteContentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -828,7 +843,8 @@ export namespace Prisma {
     Campaign: 'Campaign',
     Category: 'Category',
     Post: 'Post',
-    Comment: 'Comment'
+    Comment: 'Comment',
+    SiteContent: 'SiteContent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -844,7 +860,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "address" | "product" | "order" | "orderProduct" | "payment" | "cart" | "cartProduct" | "campaign" | "category" | "post" | "comment"
+      modelProps: "user" | "address" | "product" | "order" | "orderProduct" | "payment" | "cart" | "cartProduct" | "campaign" | "category" | "post" | "comment" | "siteContent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1736,6 +1752,80 @@ export namespace Prisma {
           }
         }
       }
+      SiteContent: {
+        payload: Prisma.$SiteContentPayload<ExtArgs>
+        fields: Prisma.SiteContentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SiteContentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SiteContentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          findFirst: {
+            args: Prisma.SiteContentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SiteContentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          findMany: {
+            args: Prisma.SiteContentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+          }
+          create: {
+            args: Prisma.SiteContentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          createMany: {
+            args: Prisma.SiteContentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SiteContentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+          }
+          delete: {
+            args: Prisma.SiteContentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          update: {
+            args: Prisma.SiteContentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          deleteMany: {
+            args: Prisma.SiteContentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SiteContentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SiteContentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>[]
+          }
+          upsert: {
+            args: Prisma.SiteContentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SiteContentPayload>
+          }
+          aggregate: {
+            args: Prisma.SiteContentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSiteContent>
+          }
+          groupBy: {
+            args: Prisma.SiteContentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SiteContentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SiteContentCountArgs<ExtArgs>
+            result: $Utils.Optional<SiteContentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1871,6 +1961,7 @@ export namespace Prisma {
     category?: CategoryOmit
     post?: PostOmit
     comment?: CommentOmit
+    siteContent?: SiteContentOmit
   }
 
   /* Types for Logging */
@@ -15994,6 +16085,1045 @@ export namespace Prisma {
 
 
   /**
+   * Model SiteContent
+   */
+
+  export type AggregateSiteContent = {
+    _count: SiteContentCountAggregateOutputType | null
+    _avg: SiteContentAvgAggregateOutputType | null
+    _sum: SiteContentSumAggregateOutputType | null
+    _min: SiteContentMinAggregateOutputType | null
+    _max: SiteContentMaxAggregateOutputType | null
+  }
+
+  export type SiteContentAvgAggregateOutputType = {
+    revision: number | null
+  }
+
+  export type SiteContentSumAggregateOutputType = {
+    revision: number | null
+  }
+
+  export type SiteContentMinAggregateOutputType = {
+    slug: string | null
+    revision: number | null
+    publishedAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SiteContentMaxAggregateOutputType = {
+    slug: string | null
+    revision: number | null
+    publishedAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SiteContentCountAggregateOutputType = {
+    slug: number
+    draft: number
+    published: number
+    revision: number
+    publishedAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SiteContentAvgAggregateInputType = {
+    revision?: true
+  }
+
+  export type SiteContentSumAggregateInputType = {
+    revision?: true
+  }
+
+  export type SiteContentMinAggregateInputType = {
+    slug?: true
+    revision?: true
+    publishedAt?: true
+    updatedAt?: true
+  }
+
+  export type SiteContentMaxAggregateInputType = {
+    slug?: true
+    revision?: true
+    publishedAt?: true
+    updatedAt?: true
+  }
+
+  export type SiteContentCountAggregateInputType = {
+    slug?: true
+    draft?: true
+    published?: true
+    revision?: true
+    publishedAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SiteContentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteContent to aggregate.
+     */
+    where?: SiteContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteContents to fetch.
+     */
+    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SiteContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SiteContents
+    **/
+    _count?: true | SiteContentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SiteContentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SiteContentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SiteContentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SiteContentMaxAggregateInputType
+  }
+
+  export type GetSiteContentAggregateType<T extends SiteContentAggregateArgs> = {
+        [P in keyof T & keyof AggregateSiteContent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSiteContent[P]>
+      : GetScalarType<T[P], AggregateSiteContent[P]>
+  }
+
+
+
+
+  export type SiteContentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SiteContentWhereInput
+    orderBy?: SiteContentOrderByWithAggregationInput | SiteContentOrderByWithAggregationInput[]
+    by: SiteContentScalarFieldEnum[] | SiteContentScalarFieldEnum
+    having?: SiteContentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SiteContentCountAggregateInputType | true
+    _avg?: SiteContentAvgAggregateInputType
+    _sum?: SiteContentSumAggregateInputType
+    _min?: SiteContentMinAggregateInputType
+    _max?: SiteContentMaxAggregateInputType
+  }
+
+  export type SiteContentGroupByOutputType = {
+    slug: string
+    draft: JsonValue
+    published: JsonValue | null
+    revision: number
+    publishedAt: Date | null
+    updatedAt: Date
+    _count: SiteContentCountAggregateOutputType | null
+    _avg: SiteContentAvgAggregateOutputType | null
+    _sum: SiteContentSumAggregateOutputType | null
+    _min: SiteContentMinAggregateOutputType | null
+    _max: SiteContentMaxAggregateOutputType | null
+  }
+
+  type GetSiteContentGroupByPayload<T extends SiteContentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SiteContentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SiteContentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SiteContentGroupByOutputType[P]>
+            : GetScalarType<T[P], SiteContentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SiteContentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    slug?: boolean
+    draft?: boolean
+    published?: boolean
+    revision?: boolean
+    publishedAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["siteContent"]>
+
+  export type SiteContentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    slug?: boolean
+    draft?: boolean
+    published?: boolean
+    revision?: boolean
+    publishedAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["siteContent"]>
+
+  export type SiteContentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    slug?: boolean
+    draft?: boolean
+    published?: boolean
+    revision?: boolean
+    publishedAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["siteContent"]>
+
+  export type SiteContentSelectScalar = {
+    slug?: boolean
+    draft?: boolean
+    published?: boolean
+    revision?: boolean
+    publishedAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SiteContentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"slug" | "draft" | "published" | "revision" | "publishedAt" | "updatedAt", ExtArgs["result"]["siteContent"]>
+
+  export type $SiteContentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SiteContent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      slug: string
+      draft: Prisma.JsonValue
+      published: Prisma.JsonValue | null
+      revision: number
+      publishedAt: Date | null
+      updatedAt: Date
+    }, ExtArgs["result"]["siteContent"]>
+    composites: {}
+  }
+
+  type SiteContentGetPayload<S extends boolean | null | undefined | SiteContentDefaultArgs> = $Result.GetResult<Prisma.$SiteContentPayload, S>
+
+  type SiteContentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SiteContentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SiteContentCountAggregateInputType | true
+    }
+
+  export interface SiteContentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SiteContent'], meta: { name: 'SiteContent' } }
+    /**
+     * Find zero or one SiteContent that matches the filter.
+     * @param {SiteContentFindUniqueArgs} args - Arguments to find a SiteContent
+     * @example
+     * // Get one SiteContent
+     * const siteContent = await prisma.siteContent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SiteContentFindUniqueArgs>(args: SelectSubset<T, SiteContentFindUniqueArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SiteContent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SiteContentFindUniqueOrThrowArgs} args - Arguments to find a SiteContent
+     * @example
+     * // Get one SiteContent
+     * const siteContent = await prisma.siteContent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SiteContentFindUniqueOrThrowArgs>(args: SelectSubset<T, SiteContentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SiteContent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentFindFirstArgs} args - Arguments to find a SiteContent
+     * @example
+     * // Get one SiteContent
+     * const siteContent = await prisma.siteContent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SiteContentFindFirstArgs>(args?: SelectSubset<T, SiteContentFindFirstArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SiteContent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentFindFirstOrThrowArgs} args - Arguments to find a SiteContent
+     * @example
+     * // Get one SiteContent
+     * const siteContent = await prisma.siteContent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SiteContentFindFirstOrThrowArgs>(args?: SelectSubset<T, SiteContentFindFirstOrThrowArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SiteContents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SiteContents
+     * const siteContents = await prisma.siteContent.findMany()
+     * 
+     * // Get first 10 SiteContents
+     * const siteContents = await prisma.siteContent.findMany({ take: 10 })
+     * 
+     * // Only select the `slug`
+     * const siteContentWithSlugOnly = await prisma.siteContent.findMany({ select: { slug: true } })
+     * 
+     */
+    findMany<T extends SiteContentFindManyArgs>(args?: SelectSubset<T, SiteContentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SiteContent.
+     * @param {SiteContentCreateArgs} args - Arguments to create a SiteContent.
+     * @example
+     * // Create one SiteContent
+     * const SiteContent = await prisma.siteContent.create({
+     *   data: {
+     *     // ... data to create a SiteContent
+     *   }
+     * })
+     * 
+     */
+    create<T extends SiteContentCreateArgs>(args: SelectSubset<T, SiteContentCreateArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SiteContents.
+     * @param {SiteContentCreateManyArgs} args - Arguments to create many SiteContents.
+     * @example
+     * // Create many SiteContents
+     * const siteContent = await prisma.siteContent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SiteContentCreateManyArgs>(args?: SelectSubset<T, SiteContentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SiteContents and returns the data saved in the database.
+     * @param {SiteContentCreateManyAndReturnArgs} args - Arguments to create many SiteContents.
+     * @example
+     * // Create many SiteContents
+     * const siteContent = await prisma.siteContent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SiteContents and only return the `slug`
+     * const siteContentWithSlugOnly = await prisma.siteContent.createManyAndReturn({
+     *   select: { slug: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SiteContentCreateManyAndReturnArgs>(args?: SelectSubset<T, SiteContentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SiteContent.
+     * @param {SiteContentDeleteArgs} args - Arguments to delete one SiteContent.
+     * @example
+     * // Delete one SiteContent
+     * const SiteContent = await prisma.siteContent.delete({
+     *   where: {
+     *     // ... filter to delete one SiteContent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SiteContentDeleteArgs>(args: SelectSubset<T, SiteContentDeleteArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SiteContent.
+     * @param {SiteContentUpdateArgs} args - Arguments to update one SiteContent.
+     * @example
+     * // Update one SiteContent
+     * const siteContent = await prisma.siteContent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SiteContentUpdateArgs>(args: SelectSubset<T, SiteContentUpdateArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SiteContents.
+     * @param {SiteContentDeleteManyArgs} args - Arguments to filter SiteContents to delete.
+     * @example
+     * // Delete a few SiteContents
+     * const { count } = await prisma.siteContent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SiteContentDeleteManyArgs>(args?: SelectSubset<T, SiteContentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SiteContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SiteContents
+     * const siteContent = await prisma.siteContent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SiteContentUpdateManyArgs>(args: SelectSubset<T, SiteContentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SiteContents and returns the data updated in the database.
+     * @param {SiteContentUpdateManyAndReturnArgs} args - Arguments to update many SiteContents.
+     * @example
+     * // Update many SiteContents
+     * const siteContent = await prisma.siteContent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SiteContents and only return the `slug`
+     * const siteContentWithSlugOnly = await prisma.siteContent.updateManyAndReturn({
+     *   select: { slug: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SiteContentUpdateManyAndReturnArgs>(args: SelectSubset<T, SiteContentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SiteContent.
+     * @param {SiteContentUpsertArgs} args - Arguments to update or create a SiteContent.
+     * @example
+     * // Update or create a SiteContent
+     * const siteContent = await prisma.siteContent.upsert({
+     *   create: {
+     *     // ... data to create a SiteContent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SiteContent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SiteContentUpsertArgs>(args: SelectSubset<T, SiteContentUpsertArgs<ExtArgs>>): Prisma__SiteContentClient<$Result.GetResult<Prisma.$SiteContentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SiteContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentCountArgs} args - Arguments to filter SiteContents to count.
+     * @example
+     * // Count the number of SiteContents
+     * const count = await prisma.siteContent.count({
+     *   where: {
+     *     // ... the filter for the SiteContents we want to count
+     *   }
+     * })
+    **/
+    count<T extends SiteContentCountArgs>(
+      args?: Subset<T, SiteContentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SiteContentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SiteContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SiteContentAggregateArgs>(args: Subset<T, SiteContentAggregateArgs>): Prisma.PrismaPromise<GetSiteContentAggregateType<T>>
+
+    /**
+     * Group by SiteContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SiteContentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SiteContentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SiteContentGroupByArgs['orderBy'] }
+        : { orderBy?: SiteContentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SiteContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSiteContentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SiteContent model
+   */
+  readonly fields: SiteContentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SiteContent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SiteContentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SiteContent model
+   */
+  interface SiteContentFieldRefs {
+    readonly slug: FieldRef<"SiteContent", 'String'>
+    readonly draft: FieldRef<"SiteContent", 'Json'>
+    readonly published: FieldRef<"SiteContent", 'Json'>
+    readonly revision: FieldRef<"SiteContent", 'Int'>
+    readonly publishedAt: FieldRef<"SiteContent", 'DateTime'>
+    readonly updatedAt: FieldRef<"SiteContent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SiteContent findUnique
+   */
+  export type SiteContentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteContent to fetch.
+     */
+    where: SiteContentWhereUniqueInput
+  }
+
+  /**
+   * SiteContent findUniqueOrThrow
+   */
+  export type SiteContentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteContent to fetch.
+     */
+    where: SiteContentWhereUniqueInput
+  }
+
+  /**
+   * SiteContent findFirst
+   */
+  export type SiteContentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteContent to fetch.
+     */
+    where?: SiteContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteContents to fetch.
+     */
+    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteContents.
+     */
+    cursor?: SiteContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteContents.
+     */
+    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+  }
+
+  /**
+   * SiteContent findFirstOrThrow
+   */
+  export type SiteContentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteContent to fetch.
+     */
+    where?: SiteContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteContents to fetch.
+     */
+    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SiteContents.
+     */
+    cursor?: SiteContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteContents.
+     */
+    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+  }
+
+  /**
+   * SiteContent findMany
+   */
+  export type SiteContentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter, which SiteContents to fetch.
+     */
+    where?: SiteContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SiteContents to fetch.
+     */
+    orderBy?: SiteContentOrderByWithRelationInput | SiteContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SiteContents.
+     */
+    cursor?: SiteContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SiteContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SiteContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SiteContents.
+     */
+    distinct?: SiteContentScalarFieldEnum | SiteContentScalarFieldEnum[]
+  }
+
+  /**
+   * SiteContent create
+   */
+  export type SiteContentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SiteContent.
+     */
+    data: XOR<SiteContentCreateInput, SiteContentUncheckedCreateInput>
+  }
+
+  /**
+   * SiteContent createMany
+   */
+  export type SiteContentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SiteContents.
+     */
+    data: SiteContentCreateManyInput | SiteContentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SiteContent createManyAndReturn
+   */
+  export type SiteContentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * The data used to create many SiteContents.
+     */
+    data: SiteContentCreateManyInput | SiteContentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SiteContent update
+   */
+  export type SiteContentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SiteContent.
+     */
+    data: XOR<SiteContentUpdateInput, SiteContentUncheckedUpdateInput>
+    /**
+     * Choose, which SiteContent to update.
+     */
+    where: SiteContentWhereUniqueInput
+  }
+
+  /**
+   * SiteContent updateMany
+   */
+  export type SiteContentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SiteContents.
+     */
+    data: XOR<SiteContentUpdateManyMutationInput, SiteContentUncheckedUpdateManyInput>
+    /**
+     * Filter which SiteContents to update
+     */
+    where?: SiteContentWhereInput
+    /**
+     * Limit how many SiteContents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SiteContent updateManyAndReturn
+   */
+  export type SiteContentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * The data used to update SiteContents.
+     */
+    data: XOR<SiteContentUpdateManyMutationInput, SiteContentUncheckedUpdateManyInput>
+    /**
+     * Filter which SiteContents to update
+     */
+    where?: SiteContentWhereInput
+    /**
+     * Limit how many SiteContents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SiteContent upsert
+   */
+  export type SiteContentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SiteContent to update in case it exists.
+     */
+    where: SiteContentWhereUniqueInput
+    /**
+     * In case the SiteContent found by the `where` argument doesn't exist, create a new SiteContent with this data.
+     */
+    create: XOR<SiteContentCreateInput, SiteContentUncheckedCreateInput>
+    /**
+     * In case the SiteContent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SiteContentUpdateInput, SiteContentUncheckedUpdateInput>
+  }
+
+  /**
+   * SiteContent delete
+   */
+  export type SiteContentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+    /**
+     * Filter which SiteContent to delete.
+     */
+    where: SiteContentWhereUniqueInput
+  }
+
+  /**
+   * SiteContent deleteMany
+   */
+  export type SiteContentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SiteContents to delete
+     */
+    where?: SiteContentWhereInput
+    /**
+     * Limit how many SiteContents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SiteContent without action
+   */
+  export type SiteContentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SiteContent
+     */
+    select?: SiteContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SiteContent
+     */
+    omit?: SiteContentOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16157,12 +17287,39 @@ export namespace Prisma {
   export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
+  export const SiteContentScalarFieldEnum: {
+    slug: 'slug',
+    draft: 'draft',
+    published: 'published',
+    revision: 'revision',
+    publishedAt: 'publishedAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SiteContentScalarFieldEnum = (typeof SiteContentScalarFieldEnum)[keyof typeof SiteContentScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
   export const QueryMode: {
@@ -16179,6 +17336,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -16302,6 +17468,20 @@ export namespace Prisma {
    * Reference to a field of type 'Status[]'
    */
   export type ListEnumStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Status[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -17132,6 +18312,65 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Comment"> | Date | string | null
   }
 
+  export type SiteContentWhereInput = {
+    AND?: SiteContentWhereInput | SiteContentWhereInput[]
+    OR?: SiteContentWhereInput[]
+    NOT?: SiteContentWhereInput | SiteContentWhereInput[]
+    slug?: StringFilter<"SiteContent"> | string
+    draft?: JsonFilter<"SiteContent">
+    published?: JsonNullableFilter<"SiteContent">
+    revision?: IntFilter<"SiteContent"> | number
+    publishedAt?: DateTimeNullableFilter<"SiteContent"> | Date | string | null
+    updatedAt?: DateTimeFilter<"SiteContent"> | Date | string
+  }
+
+  export type SiteContentOrderByWithRelationInput = {
+    slug?: SortOrder
+    draft?: SortOrder
+    published?: SortOrderInput | SortOrder
+    revision?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteContentWhereUniqueInput = Prisma.AtLeast<{
+    slug?: string
+    AND?: SiteContentWhereInput | SiteContentWhereInput[]
+    OR?: SiteContentWhereInput[]
+    NOT?: SiteContentWhereInput | SiteContentWhereInput[]
+    draft?: JsonFilter<"SiteContent">
+    published?: JsonNullableFilter<"SiteContent">
+    revision?: IntFilter<"SiteContent"> | number
+    publishedAt?: DateTimeNullableFilter<"SiteContent"> | Date | string | null
+    updatedAt?: DateTimeFilter<"SiteContent"> | Date | string
+  }, "slug">
+
+  export type SiteContentOrderByWithAggregationInput = {
+    slug?: SortOrder
+    draft?: SortOrder
+    published?: SortOrderInput | SortOrder
+    revision?: SortOrder
+    publishedAt?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: SiteContentCountOrderByAggregateInput
+    _avg?: SiteContentAvgOrderByAggregateInput
+    _max?: SiteContentMaxOrderByAggregateInput
+    _min?: SiteContentMinOrderByAggregateInput
+    _sum?: SiteContentSumOrderByAggregateInput
+  }
+
+  export type SiteContentScalarWhereWithAggregatesInput = {
+    AND?: SiteContentScalarWhereWithAggregatesInput | SiteContentScalarWhereWithAggregatesInput[]
+    OR?: SiteContentScalarWhereWithAggregatesInput[]
+    NOT?: SiteContentScalarWhereWithAggregatesInput | SiteContentScalarWhereWithAggregatesInput[]
+    slug?: StringWithAggregatesFilter<"SiteContent"> | string
+    draft?: JsonWithAggregatesFilter<"SiteContent">
+    published?: JsonNullableWithAggregatesFilter<"SiteContent">
+    revision?: IntWithAggregatesFilter<"SiteContent"> | number
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"SiteContent"> | Date | string | null
+    updatedAt?: DateTimeWithAggregatesFilter<"SiteContent"> | Date | string
+  }
+
   export type UserCreateInput = {
     email: string
     name?: string | null
@@ -17928,6 +19167,69 @@ export namespace Prisma {
     postId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type SiteContentCreateInput = {
+    slug: string
+    draft: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: number
+    publishedAt?: Date | string | null
+    updatedAt?: Date | string
+  }
+
+  export type SiteContentUncheckedCreateInput = {
+    slug: string
+    draft: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: number
+    publishedAt?: Date | string | null
+    updatedAt?: Date | string
+  }
+
+  export type SiteContentUpdateInput = {
+    slug?: StringFieldUpdateOperationsInput | string
+    draft?: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteContentUncheckedUpdateInput = {
+    slug?: StringFieldUpdateOperationsInput | string
+    draft?: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteContentCreateManyInput = {
+    slug: string
+    draft: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: number
+    publishedAt?: Date | string | null
+    updatedAt?: Date | string
+  }
+
+  export type SiteContentUpdateManyMutationInput = {
+    slug?: StringFieldUpdateOperationsInput | string
+    draft?: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SiteContentUncheckedUpdateManyInput = {
+    slug?: StringFieldUpdateOperationsInput | string
+    draft?: JsonNullValueInput | InputJsonValue
+    published?: NullableJsonNullValueInput | InputJsonValue
+    revision?: IntFieldUpdateOperationsInput | number
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -18808,6 +20110,135 @@ export namespace Prisma {
     id?: SortOrder
     authorId?: SortOrder
     postId?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type SiteContentCountOrderByAggregateInput = {
+    slug?: SortOrder
+    draft?: SortOrder
+    published?: SortOrder
+    revision?: SortOrder
+    publishedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteContentAvgOrderByAggregateInput = {
+    revision?: SortOrder
+  }
+
+  export type SiteContentMaxOrderByAggregateInput = {
+    slug?: SortOrder
+    revision?: SortOrder
+    publishedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteContentMinOrderByAggregateInput = {
+    slug?: SortOrder
+    revision?: SortOrder
+    publishedAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SiteContentSumOrderByAggregateInput = {
+    revision?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type PostCreateNestedManyWithoutAuthorInput = {
@@ -19854,6 +21285,52 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumStatusFilter<$PrismaModel>
     _max?: NestedEnumStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type PostCreateWithoutAuthorInput = {

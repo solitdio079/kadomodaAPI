@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import passport from 'passport';
 import routes from './routes/index.js';
+import siteContent from './routes/siteContent.js';
 import { authenticate } from './middleware/auth.js';
 import { errorHandler, HttpError } from './middleware/http.js';
 import { uploadDirectory } from './utils/multerUpload.js';
@@ -27,6 +28,7 @@ export function createApp() {
   app.use(express.static(uploadDirectory, { dotfiles: 'deny', index: false, fallthrough: true }));
   app.use('/auth', rateLimit({ windowMs: 15 * 60 * 1000, limit: 30, standardHeaders: 'draft-8', legacyHeaders: false,
     message: { code: 'RATE_LIMITED', error: 'Çok fazla deneme yaptınız. Lütfen daha sonra tekrar deneyin.' } }), routes.auth);
+  app.use('/site-content', siteContent);
   app.use('/product', routes.product);
   app.use('/category', routes.category);
   app.use('/campaign', routes.campaign);

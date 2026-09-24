@@ -98,3 +98,22 @@ shipping quotes, provider-verified payments, idempotent webhooks, refunds and fu
 purchase tests. Account recovery/session lifecycle, branded transactional emails
 and the storefront admin UI remain later milestones. There is no runtime switch
 that enables the old unsafe checkout code.
+
+
+## Store content release — 2026-09-24
+
+Deploy this API before the updated storefront. Migration 20260924000000_site_content
+adds a standalone SiteContent table and does not remove existing records. Existing
+ADMIN users remain valid. GET /site-content is public and returns only published
+snapshots; /site-content/admin reads and writes require ADMIN. Each slug has a
+private draft, separate public snapshot and revision for optimistic concurrency.
+Publishing requires complete content and explicit confirmation. Draft edits do not
+change a published page; unpublishing hides the page and retains its draft.
+
+Allowed slugs: business, about, privacy, distance-sales, delivery, returns. Text is
+plain text, rendered escaped by the frontend. No default legal content is seeded.
+Populate and publish real merchant-approved text in /yonetim/bilgiler. Publication
+validation checks format/completeness, not legal adequacy or iyzico approval.
+
+Verified: 7 API unit tests, 11 local-database integration tests, all 16 migrations
+and schema drift check. Production data has not been altered by these checks.

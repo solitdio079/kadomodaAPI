@@ -179,3 +179,13 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
 }
+
+// Public pages use an explicit snapshot, never the administrator's draft.
+model SiteContent {
+  slug String @id
+  draft Json
+  published Json?
+  revision Int @default(1)
+  publishedAt DateTime?
+  updatedAt DateTime @updatedAt
+}

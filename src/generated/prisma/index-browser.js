@@ -234,9 +234,27 @@ exports.Prisma.CommentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SiteContentScalarFieldEnum = {
+  slug: 'slug',
+  draft: 'draft',
+  published: 'published',
+  revision: 'revision',
+  publishedAt: 'publishedAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -247,6 +265,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
@@ -283,7 +307,8 @@ exports.Prisma.ModelName = {
   Campaign: 'Campaign',
   Category: 'Category',
   Post: 'Post',
-  Comment: 'Comment'
+  Comment: 'Comment',
+  SiteContent: 'SiteContent'
 };
 
 /**

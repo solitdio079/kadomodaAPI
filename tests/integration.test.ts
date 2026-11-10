@@ -209,3 +209,28 @@ test('Excel template previews without writes, imports atomically, prevents dupli
   assert.equal(await prisma.product.count({ where: { name: 'Eşzamanlı Ürün' } }), 1);
   assert.deepEqual(await readdir(process.env.IMPORT_DIR!), []);
 });
+
+test('reference categories are seeded, editable as a tree, cycle-safe, and include descendant products', async () => {
+  const seeded = await prisma.category.findMany({ where: { slug: { not: null } } });
+  assert.equal(seeded.length, 63);
+  const upper = seeded.find(c => c.slug === 'ust-giyim')!;
+  const dress = seeded.find(c => c.slug === 'ust-giyim/elbise')!;
+  assert.equal(dress.parentId, upper.id);
+  assert.equal(seeded.filter(c => c.name === 'OVERSIZE').length, 2);
+  const parent = await request('/category', { method: 'POST', token: adminToken, body: { name: 'Yeni ana kategori' } });
+  assert.equal(parent.status, 201);
+  const child = await request('/category', { method: 'POST', token: adminToken, body: { name: 'Yeni alt kategori', parentId: parent.body.data.id } });
+  assert.equal(child.status, 201); assert.equal(child.body.data.parentId, parent.body.data.id);
+  const leaf = await request('/category', { method: 'POST', token: adminToken, body: { name: 'Yeni yaprak kategori', parentId: child.body.data.id } });
+  assert.equal(leaf.status, 201);
+  await prisma.product.create({ data: { name: 'Alt kategoride ürün', details: 'Alt kategoride test ürün açıklaması', categoryId: leaf.body.data.id, price: '10', sizes: ['M'], total_qty: 1, variant: 'Siyah' } });
+  const result = await request(`/product/category/${parent.body.data.id}`);
+  assert.equal(result.status, 200); assert.equal(result.body.data.length, 1); assert.equal(result.body.data[0].categoryId, leaf.body.data.id);
+  const cycle = await request(`/category/${parent.body.data.id}`, { method: 'PUT', token: adminToken, body: { name: 'Döngü', parentId: leaf.body.data.id } });
+  assert.equal(cycle.status, 400); assert.equal(cycle.body.code, 'CATEGORY_CYCLE');
+  assert.equal((await request('/category', { method: 'POST', token: adminToken, body: { name: 'Geçersiz üst', parentId: 2147483647 } })).status, 400);
+  assert.equal((await request(`/category/${parent.body.data.id}`, { method: 'DELETE', token: adminToken })).status, 409);
+  assert.equal((await request(`/category/${leaf.body.data.id}`, { method: 'DELETE', token: adminToken })).status, 409);
+  const renamed = await request(`/category/${child.body.data.id}`, { method: 'PUT', token: adminToken, body: { name: 'Yeni isim' } });
+  assert.equal(renamed.status, 200); assert.equal(renamed.body.data.parentId, parent.body.data.id);
+});

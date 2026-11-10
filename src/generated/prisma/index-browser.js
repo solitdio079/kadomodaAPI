@@ -209,7 +209,10 @@ exports.Prisma.CampaignScalarFieldEnum = {
 
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
-  name: 'name'
+  name: 'name',
+  slug: 'slug',
+  parentId: 'parentId',
+  sortOrder: 'sortOrder'
 };
 
 exports.Prisma.PostScalarFieldEnum = {

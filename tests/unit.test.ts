@@ -6,6 +6,16 @@ import { idParam } from '../src/middleware/http.js';
 import { priceLines } from '../src/services/pricing.js';
 import ExcelJS from 'exceljs';
 import { importColumns, parseProductSheet } from '../src/services/productImport.js';
+import { validateParent, descendantIds } from '../src/services/categoryTree.js';
+
+test('category hierarchy includes descendants and rejects missing/cyclic parents', () => {
+  const nodes = [{ id: 1, parentId: null }, { id: 2, parentId: 1 }, { id: 3, parentId: 2 }, { id: 4, parentId: null }];
+  assert.deepEqual(descendantIds(nodes, 1).sort(), [1, 2, 3]);
+  validateParent(nodes, 1, 3); validateParent(nodes, null, 1);
+  assert.throws(() => validateParent(nodes, 3, 1));
+  assert.throws(() => validateParent(nodes, 2, 2));
+  assert.throws(() => validateParent(nodes, 999, 1));
+});
 
 function importBook(rows: ExcelJS.CellValue[][], columns = importColumns) {
   const book = new ExcelJS.Workbook();

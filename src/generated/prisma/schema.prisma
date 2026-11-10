@@ -141,9 +141,16 @@ model Campaign {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String
-  products Product[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  slug      String?    @unique
+  parentId  Int?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  children  Category[] @relation("CategoryTree")
+  sortOrder Int        @default(0)
+  products  Product[]
+
+  @@index([parentId, sortOrder])
 }
 
 model Post {

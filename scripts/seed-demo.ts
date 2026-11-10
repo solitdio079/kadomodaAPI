@@ -18,7 +18,9 @@ export async function seedDemo() {
       // Reruns do not overwrite edits made later in the admin panel.
       const existing = await tx.product.findUnique({ where: { seedKey: prefix + p.key } });
       if (existing) { ids.push(existing.id); continue; }
-      const category = await tx.category.findFirst({ where: { name: p.category } }) ?? await tx.category.create({ data: { name: p.category } });
+      const categorySlugs: Record<string, string> = { Elbiseler: 'ust-giyim/elbise', Ceketler: 'dis-giyim/ceket', 'Üst Giyim': 'ust-giyim', Takımlar: 'takim', Etekler: 'alt-giyim/etek', 'Dış Giyim': 'dis-giyim', Aksesuar: 'aksesuar' };
+      const canonical = categorySlugs[p.category] ? await tx.category.findUnique({ where: { slug: categorySlugs[p.category] } }) : null;
+      const category = canonical ?? await tx.category.findFirst({ where: { name: p.category } }) ?? await tx.category.create({ data: { name: p.category } });
       const created = await tx.product.create({ data: { name: p.name, details: p.details, categoryId: category.id, campaignId: null, sizes: p.sizes, total_qty: p.stock, price: p.price, variant: p.color, images: [`demo-${p.image}`], isDemo: true, seedKey: prefix + p.key } });
       ids.push(created.id);
     }

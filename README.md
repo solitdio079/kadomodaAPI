@@ -155,3 +155,30 @@ Imported products have `images: []`. They are public catalog records with the
 existing placeholder, and the admin's normal multipart product PUT adds photos
 later without changing the product ID. No migration or new dependency is needed.
 Both API and frontend must be deployed for the new workflow to appear.
+
+## Hierarchical reference categories
+
+Migration `20261110000000_category_hierarchy` adds nullable unique `slug`, nullable
+`parentId` (self relation, restricted deletion), and `sortOrder` to Category. It
+inserts the 63 category records in the current https://www.behicesaglam.com/
+homepage navigation (checked 2026-11-10). The source URLs are retained in the
+migration data and the frontend reference manifest. `Yeni Gelenler` is a listing
+shortcut, and the parent “Tüm …” links are not extra category records.
+
+The migration adopts matching unkeyed categories and legacy plural aliases
+(Elbiseler, Ceketler, Etekler, Takımlar), preserving IDs/product foreign keys.
+Unrelated categories and all products remain intact. Existing names may become
+singular and/or be placed beneath their source parent. Standard API deployment
+runs this migration automatically; no additional seed command is needed.
+
+GET `/category` returns flat records with `parentId`, `slug`, and `sortOrder` for
+clients to assemble. POST and PUT accept optional `parentId` (number/null) and
+`sortOrder` (0–10000). Omitting parentId on PUT preserves the existing parent.
+Missing parents and self/descendant cycles are rejected, with serializable writes
+protecting concurrent edits. Deleting categories with children/products returns
+409. GET `/product/category/:categoryId` includes descendant categories.
+
+Verified on an isolated local database: all 63 source names, ordering and parent
+links match; migration preserved 11 existing product-category assignments. The
+integration suite also covers hierarchy CRUD, cycles, descendant reads, and
+protected deletion. No production migration has been executed by this change.

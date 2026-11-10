@@ -15,7 +15,7 @@ export const productFields = z.object({
   variant: z.string().trim().min(1).max(100),
 }).strict();
 export const productPatch = productFields.partial().refine(v => Object.keys(v).length > 0);
-export const categoryFields = z.object({ name: z.string().trim().min(2).max(100) }).strict();
+export const categoryFields = z.object({ name: z.string().trim().min(2).max(100), parentId: positiveId.nullable().optional(), sortOrder: z.number().int().min(0).max(10000).optional() }).strict();
 export const campaignFields = z.object({ name: z.string().trim().min(3).max(150), discount: formInteger.refine(v => v <= 100) }).strict();
 export const campaignPatch = campaignFields.partial().refine(v => Object.keys(v).length > 0);
 export const addressFields = z.object({

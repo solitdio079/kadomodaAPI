@@ -5,6 +5,7 @@ import { productFields, productPatch } from '../validation/commerce.js';
 import { validate, idParam, notFound, HttpError } from '../middleware/http.js';
 import { readProductImport, productKey, type ImportIssue } from '../services/productImport.js';
 import { unlink } from 'node:fs/promises';
+import { descendantIds } from '../services/categoryTree.js';
 
 export const validateProduct = validate(productFields);
 export const validateProductPatch = validate(productPatch);
@@ -53,7 +54,11 @@ export async function getOneProduct(req: Request, res: Response) {
 }
 export async function getAllProducts(_req: Request, res: Response) { res.json({ data: await prisma.product.findMany({ include, orderBy: { id: 'desc' } }) }); }
 export async function getCampaignProducts(req: Request, res: Response) { res.json({ data: await prisma.product.findMany({ where: { campaignId: idParam(req.params.campaignId) }, include }) }); }
-export async function getCategoryProducts(req: Request, res: Response) { res.json({ data: await prisma.product.findMany({ where: { categoryId: idParam(req.params.categoryId) }, include }) }); }
+export async function getCategoryProducts(req: Request, res: Response) {
+  const id = idParam(req.params.categoryId);
+  const categories = await prisma.category.findMany({ select: { id: true, parentId: true } });
+  res.json({ data: await prisma.product.findMany({ where: { categoryId: { in: descendantIds(categories, id) } }, include }) });
+}
 export async function deleteProduct(req: Request, res: Response) {
   await prisma.product.delete({ where: { id: idParam(req.params.productId) } });
   // Keep existing image files: historical orders may refer to them.

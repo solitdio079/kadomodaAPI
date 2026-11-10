@@ -1,11 +1,9 @@
 import type { Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { Prisma } from '../generated/prisma/index.js';
-import { productFields, productPatch, positiveId } from '../validation/commerce.js';
+import { productFields, productPatch } from '../validation/commerce.js';
 import { validate, idParam, notFound, HttpError } from '../middleware/http.js';
-import ExcelJS from 'exceljs';
-import { z } from 'zod';
-import path from 'node:path';
+import { readProductImport, productKey, type ImportIssue } from '../services/productImport.js';
 import { unlink } from 'node:fs/promises';
 
 export const validateProduct = validate(productFields);
@@ -62,39 +60,35 @@ export async function deleteProduct(req: Request, res: Response) {
   res.json({ message: 'Ürün silindi.' });
 }
 
-const csvProduct = z.object({
-  name: z.string().trim().min(3).max(200),
-  sizes: z.string().transform(v => v.split('|').map(s => s.trim())).pipe(z.array(z.string().min(1).max(20)).min(1).max(20)).refine(s => new Set(s).size === s.length),
-  total_qty: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().nonnegative().max(2147483647)),
-  price: z.string().regex(/^\d{1,8}(\.\d{1,2})?$/), variant: z.string().trim().min(1).max(100),
-});
-const columns = ['name', 'sizes', 'total_qty', 'price', 'variant'];
-export async function createBulkProducts(req: Request, res: Response) {
+// Preview never writes; commit revalidates the same upload and current relations.
+export async function createBulkProducts(req: Request, res: Response) { return bulkProducts(req, res, false); }
+export async function previewBulkProducts(req: Request, res: Response) { return bulkProducts(req, res, true); }
+async function bulkProducts(req: Request, res: Response, preview: boolean) {
   if (!req.file) throw new HttpError(400, 'FILE_REQUIRED', 'CSV veya XLSX dosyası yükleyin.');
   try {
     const categoryId = idParam(req.body.categoryId);
     const campaignId = req.body.campaignId ? idParam(req.body.campaignId) : null;
     await checkRelations({ categoryId, campaignId });
-    const workbook = new ExcelJS.Workbook();
-    try {
-      if (path.extname(req.file.originalname).toLowerCase() === '.csv') await workbook.csv.readFile(req.file.path, { map: (value: string) => value });
-      else await workbook.xlsx.readFile(req.file.path);
-    } catch { throw new HttpError(400, 'INVALID_FILE', 'Dosya okunamadı. CSV veya XLSX biçimini kontrol edin.'); }
-    const sheet = workbook.worksheets[0];
-    if (!sheet || sheet.rowCount < 2 || sheet.rowCount > 1001) throw new HttpError(400, 'ROW_LIMIT', 'Dosya 1 ile 1000 arasında ürün içermelidir.');
-    const headers = Array.from({ length: sheet.columnCount }, (_, i) => sheet.getRow(1).getCell(i + 1).text.trim());
-    if (headers.length !== columns.length || !columns.every(c => headers.includes(c))) throw new HttpError(400, 'INVALID_COLUMNS', 'Sütunlar name, sizes, total_qty, price, variant olmalıdır.');
-    const products: z.infer<typeof csvProduct>[] = [];
-    sheet.eachRow((row, number) => {
-      if (number === 1) return;
-      const values = headers.map((_, i) => row.getCell(i + 1).text.trim());
-      if (values.every(v => v === '')) return;
-      const parsed = csvProduct.safeParse(Object.fromEntries(headers.map((h, i) => [h, values[i]])));
-      if (!parsed.success) throw new HttpError(400, 'INVALID_ROW', `${number}. satırdaki ürün bilgilerini kontrol edin. Hiçbir ürün eklenmedi.`);
-      products.push(parsed.data);
+    const { products, issues } = await readProductImport(req.file);
+    const checkExisting = async (db: Pick<Prisma.TransactionClient, 'product'>) => {
+      const existing = await db.product.findMany({ where: { categoryId }, select: { name: true, variant: true } });
+      const keys = new Set(existing.map(productKey));
+      return products.filter(p => keys.has(productKey(p))).map(p => ({ row: p.row, field: 'name', reason: 'exists' as const }));
+    };
+    const report = (errors: ImportIssue[]) => ({
+      valid: errors.length === 0, count: products.length, issueCount: errors.length, issues: errors.slice(0, 100),
+      rows: products.map(({ details: _details, ...p }) => p),
     });
-    if (!products.length) throw new HttpError(400, 'EMPTY_FILE', 'Dosyada ürün bulunamadı.');
-    const result = await prisma.product.createMany({ data: products.map(p => ({ ...p, categoryId, campaignId })) });
-    res.status(201).json({ count: result.count });
+    if (preview) return res.json(report([...issues, ...await checkExisting(prisma)]));
+    if (issues.length) return res.status(400).json({ code: 'INVALID_IMPORT', ...report(issues) });
+    // Serializable duplicate check also protects a retry after a lost response.
+    const result = await prisma.$transaction(async tx => {
+      const conflicts = await checkExisting(tx);
+      if (conflicts.length) return { conflicts, count: 0 };
+      const created = await tx.product.createMany({ data: products.map(({ row: _row, ...p }) => ({ ...p, categoryId, campaignId, images: [] })) });
+      return { conflicts: [], count: created.count };
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: 5000, timeout: 20000 });
+    if (result.conflicts.length) return res.status(409).json({ code: 'INVALID_IMPORT', ...report(result.conflicts) });
+    return res.status(201).json({ count: result.count });
   } finally { await unlink(req.file.path).catch(() => {}); }
 }

@@ -4,6 +4,49 @@ import { Prisma } from '../src/generated/prisma/index.js';
 import { cartFields, addressFields, productFields, productPatch, campaignFields, orderStatusFields } from '../src/validation/commerce.js';
 import { idParam } from '../src/middleware/http.js';
 import { priceLines } from '../src/services/pricing.js';
+import ExcelJS from 'exceljs';
+import { importColumns, parseProductSheet } from '../src/services/productImport.js';
+
+function importBook(rows: ExcelJS.CellValue[][], columns = importColumns) {
+  const book = new ExcelJS.Workbook();
+  const sheet = book.addWorksheet('Urunler');
+  sheet.addRow(columns); rows.forEach(row => sheet.addRow(row));
+  return book;
+}
+const importRow = ['Saten Elbise', 'Yumuşak dokulu saten elbise.', 'S, M, L', 12, 1890.50, 'Siyah'];
+test('Excel import parses typed numbers, Turkish decimals, sizes and description', () => {
+  const parsed = parseProductSheet(importBook([importRow, ['Keten Gömlek', 'Uzun kollu keten gömlek.', 'M|L', '0', '999,90', 'Beyaz']]));
+  assert.deepEqual(parsed.issues, []);
+  assert.equal(parsed.products[0].price, '1890.5');
+  assert.equal(parsed.products[0].details, importRow[1]);
+  assert.deepEqual(parsed.products[1].sizes, ['M', 'L']);
+  assert.equal(parsed.products[1].price, '999.90');
+  assert.equal(parsed.products[1].total_qty, 0);
+});
+test('Excel import reports row/field errors and rejects formulas and duplicate products', () => {
+  const book = importBook([importRow, [...importRow.slice(0, 3), -1, 12, 'Beyaz'], [...importRow.slice(0, 4), { formula: '1+1', result: 2 }, 'Mavi'], importRow]);
+  const result = parseProductSheet(book);
+  assert.deepEqual(result.issues, [
+    { row: 3, field: 'total_qty', reason: 'invalid' },
+    { row: 4, field: 'price', reason: 'cell_type' },
+    { row: 5, field: 'name', reason: 'duplicate' },
+  ]);
+  const invalidRows = [
+    ['name', 'x'], ['details', 'short'], ['sizes', 'M,M'], ['sizes', ''], ['total_qty', '2.5'], ['total_qty', '2147483648'], ['price', '12.345'], ['price', '1.890,50'], ['variant', ''], ['price', new Date()],
+  ];
+  for (const [field, value] of invalidRows) {
+    const row: ExcelJS.CellValue[] = [...importRow]; row[importColumns.indexOf(String(field))] = value;
+    assert.ok(parseProductSheet(importBook([row])).issues.length, `${field}: ${value}`);
+  }
+});
+test('Excel import accepts legacy columns, ignores empty rows, rejects empty/malformed/oversized sheets', () => {
+  assert.deepEqual(parseProductSheet(importBook([['Legacy product', 'S|M', '1', '10.00', 'Siyah']], ['name', 'sizes', 'total_qty', 'price', 'variant'])).products[0].details, '');
+  assert.equal(parseProductSheet(importBook([[], importRow])).products[0].row, 3);
+  assert.throws(() => parseProductSheet(importBook([[]])));
+  assert.throws(() => parseProductSheet(importBook([importRow], ['name', 'name', 'sizes', 'total_qty', 'price', 'variant'])));
+  const huge = importBook([importRow]); huge.worksheets[0].getCell('A1002').value = 'overflow';
+  assert.throws(() => parseProductSheet(huge));
+});
 
 test('IDs reject partial strings, negative values and overflow', () => {
   assert.equal(idParam('123'), 123);

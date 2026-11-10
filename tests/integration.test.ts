@@ -57,12 +57,13 @@ test('health, public catalog and allowed CORS preflight work without a token', a
   const denied = await fetch(base + '/product', { headers: { Origin: 'https://untrusted.example' } }); assert.equal(denied.status, 403);
 });
 test('catalog mutations require ADMIN before uploads or database changes', async () => {
-  for (const [url, method, body] of [['/category','POST',{name:'Bad'}], [`/category/${categoryId}`,'DELETE',undefined], ['/campaign','POST',{name:'Bad',discount:20}], [`/product/${productId}`,'DELETE',undefined], ['/product','POST',{}], ['/product/bulk','POST',{}]] as const) {
+  for (const [url, method, body] of [['/category','POST',{name:'Bad'}], [`/category/${categoryId}`,'DELETE',undefined], ['/campaign','POST',{name:'Bad',discount:20}], [`/product/${productId}`,'DELETE',undefined], ['/product','POST',{}], ['/product/bulk','POST',{}], ['/product/bulk/preview','POST',{}]] as const) {
     assert.equal((await request(url, { method, body, token: ownerToken })).status, 403);
     assert.equal((await request(url, { method, body })).status, 401);
   }
   assert.equal(await prisma.product.count(), 1);
 });
+
 test('PUT updates the same ID, parses multipart numbers and preserves images', async () => {
   const form = new FormData();
   for (const [key,value] of Object.entries({ name: 'Edited elbise', details: 'Yeni test ürün açıklaması', sizesString: 'S,M', total_qty: '3', price: '19.99', categoryId: String(categoryId), variant: 'Siyah' })) form.set(key, value);
@@ -153,4 +154,58 @@ test('site content drafts stay private, publication requires admin and complete 
   const complete = { ...business, legalName: 'Test İşletmesi', address: 'Test Mahallesi Numara 1 İstanbul', email: 'test@example.test', phone: '+905551234567', returnAddress: 'Test İade Adresi Numara 1 İstanbul', taxOffice: 'Test Dairesi', taxNumber: '1234567890', shippingFee: 'Test kargo bedeli', dispatchTime: 'Test hazırlık süresi', deliveryTime: 'Test teslimat süresi' };
   assert.equal((await request('/site-content/admin/business', { method: 'PUT', token: adminToken, body: { revision: 0, action: 'publish', confirmed: true, content: complete } })).status, 200);
   assert.equal((await request('/site-content')).body.data[0].content.legalName, 'Test İşletmesi');
+});
+
+test('Excel template previews without writes, imports atomically, prevents duplicates, then accepts photos', async () => {
+  const { default: ExcelJS } = await import('exceljs');
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(new URL('../../kadoModaClient/public/templates/kado-moda-urun-sablonu.xlsx', import.meta.url).pathname);
+  const sheet = workbook.getWorksheet('Urunler')!;
+  sheet.getRow(2).values = ['Toplu Saten Elbise', 'Yumuşak dokulu saten elbise.', 'S, M, L', 12, 1890.50, 'Siyah'];
+  sheet.getRow(3).values = ['Toplu Keten Gömlek', 'Uzun kollu keten gömlek.', 'M|L', 4, '999,90', 'Beyaz'];
+  const campaign = await prisma.campaign.create({ data: { name: 'Bulk test campaign', discount: 10 } });
+  const send = async (endpoint: string, category = String(categoryId), bytes?: ArrayBuffer) => {
+    const form = new FormData(); form.set('categoryId', category); form.set('campaignId', String(campaign.id));
+    form.set('file', new Blob([bytes ?? await workbook.xlsx.writeBuffer() as unknown as ArrayBuffer]), 'products.xlsx');
+    const response = await fetch(base + endpoint, { method: 'POST', headers: { Authorization: `Bearer ${adminToken}` }, body: form });
+    return { status: response.status, body: await response.json() };
+  };
+  const before = await prisma.product.count();
+  let preview = await send('/product/bulk/preview');
+  assert.equal(preview.status, 200, JSON.stringify(preview.body));
+  assert.equal(preview.body.valid, true); assert.equal(preview.body.count, 2);
+  assert.equal(await prisma.product.count(), before);
+  assert.deepEqual(await readdir(process.env.IMPORT_DIR!), []);
+  sheet.getCell('E3').value = 'bad price';
+  const invalid = await send('/product/bulk');
+  assert.equal(invalid.status, 400); assert.equal(invalid.body.issues[0].row, 3); assert.equal(invalid.body.issues[0].field, 'price');
+  assert.equal(await prisma.product.count(), before);
+  sheet.getCell('E3').value = '999,90';
+  assert.equal((await send('/product/bulk', '2147483647')).status, 400);
+  assert.equal((await send('/product/bulk', String(categoryId), new TextEncoder().encode('not xlsx').buffer)).status, 400);
+  const created = await send('/product/bulk');
+  assert.equal(created.status, 201, JSON.stringify(created.body)); assert.equal(created.body.count, 2);
+  assert.equal(await prisma.product.count(), before + 2);
+  const product = await prisma.product.findFirstOrThrow({ where: { name: 'Toplu Saten Elbise' } });
+  assert.equal(product.details, 'Yumuşak dokulu saten elbise.'); assert.equal(product.campaignId, campaign.id);
+  assert.equal(product.price.toString(), '1890.5'); assert.deepEqual(product.images, []);
+  assert.deepEqual(product.sizes, ['S', 'M', 'L']);
+  const again = await send('/product/bulk'); assert.equal(again.status, 409); assert.equal(again.body.issues[0].reason, 'exists');
+  assert.equal(await prisma.product.count(), before + 2);
+  preview = await send('/product/bulk/preview'); assert.equal(preview.body.valid, false);
+  const form = new FormData();
+  for (const [key, value] of Object.entries({ name: product.name, details: product.details, sizesString: product.sizes.join(', '), total_qty: String(product.total_qty), price: product.price.toString(), variant: product.variant, categoryId: String(product.categoryId), campaignId: String(campaign.id) })) form.set(key, value);
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aLPsAAAAASUVORK5CYII=', 'base64');
+  form.set('images', new Blob([png], { type: 'image/png' }), 'product.png');
+  const response = await fetch(base + `/product/${product.id}`, { method: 'PUT', headers: { Authorization: `Bearer ${adminToken}` }, body: form });
+  const withPhoto = await response.json();
+  assert.equal(response.status, 200, JSON.stringify(withPhoto)); assert.equal(withPhoto.data.images.length, 1);
+  assert.equal(withPhoto.data.id, product.id); assert.equal(withPhoto.data.details, product.details);
+  assert.equal((await fetch(base + '/' + withPhoto.data.images[0])).status, 200);
+  sheet.getRow(2).values = ['Eşzamanlı Ürün', 'Eşzamanlı yükleme test ürünü.', 'M', 2, 500, 'Mavi'];
+  sheet.getRow(3).values = [];
+  const concurrent = await Promise.all([send('/product/bulk'), send('/product/bulk')]);
+  assert.deepEqual(concurrent.map(r => r.status).sort(), [201, 409]);
+  assert.equal(await prisma.product.count({ where: { name: 'Eşzamanlı Ürün' } }), 1);
+  assert.deepEqual(await readdir(process.env.IMPORT_DIR!), []);
 });

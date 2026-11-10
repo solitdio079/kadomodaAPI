@@ -117,3 +117,41 @@ validation checks format/completeness, not legal adequacy or iyzico approval.
 
 Verified: 7 API unit tests, 11 local-database integration tests, all 16 migrations
 and schema drift check. Production data has not been altered by these checks.
+
+
+## Live demo catalog populated 2026-09-24
+
+The requested eight proposal demo products were inserted into the live database
+and their photos uploaded through the ADMIN API. Product IDs: 6–13. Records have
+isDemo=true and luxury-preview-v1: seed keys; admin edits and deletion remain
+available. The storefront and all eight photos were checked live. These records
+are demonstration merchandise, not approved inventory for payment-provider review.
+The seed timeout is now 60 seconds to accommodate the hosted database.
+
+## Excel import with later photo editing
+
+ADMIN-only `POST /product/bulk/preview` accepts multipart `file` (.xlsx or legacy
+.csv), `categoryId`, and optional `campaignId`. It parses without inserting and
+returns `{valid, count, rows, issueCount, issues}`. Issues use stable row/field and
+reason codes. Responses show at most 100 issues. The first 20 preview rows are
+shown in the frontend.
+
+`POST /product/bulk` revalidates the upload, rejects errors atomically, checks for
+existing name/variant pairs in the chosen category, and creates the entire batch
+in a serializable transaction. Case and surrounding whitespace are normalized
+for duplicate checks. A repeated/concurrent upload cannot insert another copy
+through this endpoint. Regular product creation retains its existing behavior.
+
+New templates have `name, details, sizes, total_qty, price, variant` headers.
+Descriptions follow normal product validation. Sizes accept commas (legacy pipes
+also work). Prices accept a comma or dot decimal separator without grouping.
+Legacy five-column imports remain supported with empty descriptions; fill those
+old descriptions when editing. The named `Urunler` sheet is preferred, otherwise
+the first sheet is read. Other sheets are ignored. Formula/date/link/error cells
+are rejected. Limits remain 5 MB and rows 2–1001; temporary files are private and
+removed after both preview and commit, including failures.
+
+Imported products have `images: []`. They are public catalog records with the
+existing placeholder, and the admin's normal multipart product PUT adds photos
+later without changing the product ID. No migration or new dependency is needed.
+Both API and frontend must be deployed for the new workflow to appear.

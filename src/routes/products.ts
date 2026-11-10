@@ -9,6 +9,7 @@ router.get('/category/:categoryId', c.getCategoryProducts);
 router.get('/:productId', c.getOneProduct);
 router.get('/', c.getAllProducts);
 router.use(authenticate, admin);
+router.post('/bulk/preview', uploadBulk.single('file'), c.previewBulkProducts);
 router.post('/bulk', uploadBulk.single('file'), c.createBulkProducts);
 router.post('/', upload.array('images', 6), verifyImageUploads, c.validateProduct, c.createOneProduct);
 router.put('/:productId', upload.array('images', 6), verifyImageUploads, c.validateProduct, c.putProduct);

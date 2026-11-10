@@ -11,6 +11,7 @@ export async function seedDemo() {
   const uploadDirectory = path.resolve(process.env.UPLOAD_DIR || 'public');
   await fs.mkdir(uploadDirectory, { recursive: true });
   for (const p of products) await fs.copyFile(path.join(directory, 'fixtures', p.image), path.join(uploadDirectory, `demo-${p.image}`));
+  // Hosted PostgreSQL can exceed Prisma's five-second default for this batch.
   return prisma.$transaction(async tx => {
     const ids: number[] = [];
     for (const p of products) {
@@ -22,7 +23,7 @@ export async function seedDemo() {
       ids.push(created.id);
     }
     return ids;
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: 10000, timeout: 60000 });
 }
 async function main() {
   if (process.argv.includes('--list')) {
